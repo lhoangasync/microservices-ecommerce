@@ -2,6 +2,8 @@ package com.laptopexpress.identity_service.service;
 
 
 import com.laptopexpress.identity_service.dto.request.UserCreateRequest;
+import com.laptopexpress.identity_service.dto.request.UserUpdateRequest;
+import com.laptopexpress.identity_service.dto.response.PageResponse;
 import com.laptopexpress.identity_service.dto.response.UserResponse;
 import com.laptopexpress.identity_service.entity.User;
 import com.laptopexpress.identity_service.exception.IdInvalidException;
@@ -11,8 +13,15 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -62,4 +71,51 @@ public class UserService {
 
         return userMapper.toUserResponse(savedUser);
     }
+
+    //handle get user by id
+    public UserResponse handleGetUserById(String id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        return userOptional.map(userMapper::toUserResponse).orElse(null);
+    }
+
+    //handle get all users
+    public PageResponse<UserResponse> handleGetAllUsers(int page, int size) {
+        Sort sort = Sort.by("createdAt").descending();
+
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+
+        var pageData = userRepository.findAll(pageable);
+
+        return PageResponse.<UserResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(pageData.getContent().stream().map(userMapper::toUserResponse).toList())
+                .build();
+    }
+
+    //delete user by id
+    public void deleteUserById(String id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        userOptional.ifPresent(userRepository::delete);
+    }
+
+    //update user
+    public UserResponse handleUpdateUser(UserUpdateRequest request)  throws  IdInvalidException {
+        User user = userRepository.findById(request.getId())
+                .orElseThrow(() -> new IdInvalidException("User with this ID = " +  request.getId() + " not found"));
+
+        if (request.getUsername() != null) user.setUsername(request.getUsername());
+        if (request.getEmail() != null) user.setEmail(request.getEmail());
+        if (request.getPhone() != null) user.setPhone(request.getPhone());
+        if (request.getAddress() != null) user.setAddress(request.getAddress());
+        if (request.getImageUrl() != null) user.setImageUrl(request.getImageUrl());
+        if (request.getGender() != null) user.setGender(request.getGender());
+
+        User updatedUser = userRepository.save(user);
+
+        return userMapper.toUserResponse(updatedUser);
+    }
+
 }

@@ -1,41 +1,29 @@
-package com.laptopexpress.identity_service.dto.response;
+package com.laptopexpress.identity_service.dto.request;
+
 
 import com.laptopexpress.identity_service.enums.GenderEnum;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.Instant;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserResponse {
+public class UserUpdateRequest {
+    @NotBlank(message = "User ID cannot be empty!!")
     String id;
 
     String username;
-
     String email;
-
-//    String password;
-
     String phone;
-
     String address;
-
     String imageUrl;
 
+    @Enumerated(EnumType.STRING)
     GenderEnum gender;
-
-//    String refreshToken;
-
-//    String verificationCode;
-
-    boolean verified;
-
-    private Instant createdAt;
-    private Instant updatedAt;
-    private String createdBy;
-    private String updatedBy;
 }
+
