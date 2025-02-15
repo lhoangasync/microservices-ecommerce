@@ -25,10 +25,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -57,7 +55,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) throws IdInvalidException {
+    ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 request.getEmail(), request.getPassword());
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
@@ -80,11 +78,13 @@ public class AuthenticationController {
         //generate token
         String accessToken = authenticationService.generateAccessToken(authentication.getName(), loginResponse);
         loginResponse.setToken(accessToken);
+
         //generate refresh token
         String refreshToken = authenticationService.generateRefreshToken(request.getEmail(), loginResponse);
 
         //update user + refresh token
         userService.updateRefreshToken(refreshToken, request.getEmail());
+
         // set cookies
         ResponseCookie cookies = ResponseCookie.from("refresh_token", refreshToken)
                 .httpOnly(true)
@@ -97,5 +97,112 @@ public class AuthenticationController {
                 .header(HttpHeaders.SET_COOKIE, cookies.toString())
                 .body(loginResponse);
     }
+
+    @GetMapping("/my-account")
+    ApiResponse<LoginResponse.UserGetAccount> getMyAccount() {
+        String email = AuthenticationService.getCurrentUserLogin().isPresent() ?
+                AuthenticationService.getCurrentUserLogin().get() : "";
+        User currentUser = userService.handleFindUserByEmail(email);
+        LoginResponse.UserLogin userLogin = new  LoginResponse.UserLogin();
+        LoginResponse.UserGetAccount userGetAccount = new LoginResponse.UserGetAccount();
+        if (currentUser != null) {
+            userLogin.setId(currentUser.getId());
+            userLogin.setEmail(currentUser.getEmail());
+            userLogin.setUsername(currentUser.getUsername());
+            userLogin.setRole(currentUser.getRole());
+
+            userGetAccount.setUser(userLogin);
+        }
+
+        return ApiResponse.<LoginResponse.UserGetAccount>builder()
+                .code(HttpStatus.OK.value())
+                .error(null)
+                .data(userGetAccount)
+                .message("Get your account successfully!")
+                .build();
+    }
+
+    @GetMapping("/refresh")
+    ApiResponse<LoginResponse> refreshToken(
+            @CookieValue(name = "refresh_token", defaultValue = "noneCookies") String refreshToken) throws IdInvalidException {
+
+        //check if cookies is existed
+        if(refreshToken.equals("noneCookies")) {
+            throw new IdInvalidException("Missing cookies!!!");
+        }
+
+        //check valid
+        Jwt decodedToken = authenticationService.checkValidRefreshToken(refreshToken);
+        String email = decodedToken.getSubject();
+
+        //check user by refresh token + email
+        User user = userService.handleFindUserByRefreshTokenAndEmail(refreshToken, email);
+        if(user == null) {
+            throw new IdInvalidException("Invalid refresh token!!!");
+        }
+        LoginResponse result = new LoginResponse();
+        User currentUser = userService.handleFindUserByEmail(email);
+        if(currentUser != null) {
+            LoginResponse.UserLogin userLogin = new  LoginResponse.UserLogin(
+                    currentUser.getId(),
+                    currentUser.getEmail(),
+                    currentUser.getUsername(),
+                    currentUser.getRole()
+            );
+            result.setUser(userLogin);
+        }
+
+        //generate token again
+        String token = authenticationService.generateAccessToken(email, result);
+        result.setToken(token);
+
+        //create refresh token again
+        String new_refresh_token = authenticationService.generateRefreshToken(email, result);
+
+        //update user + refresh token
+        userService.updateRefreshToken(new_refresh_token, email);
+
+        //set cookies
+        ResponseCookie cookies = ResponseCookie.from("refresh_token", refreshToken)
+                .httpOnly(true)
+                .maxAge(refreshTokenValidityInSeconds)
+                .secure(true)
+                .path("/")
+                .build();
+
+        return ApiResponse.<LoginResponse>builder()
+                .code(HttpStatus.OK.value())
+                .error(null)
+                .data(result)
+                .message("Refresh token successfully!")
+                .build();
+    }
+
+    @PostMapping("/logout")
+    ResponseEntity<ApiResponse<Void>> logout() throws IdInvalidException {
+        String email = AuthenticationService.getCurrentUserLogin().isPresent() ? AuthenticationService.getCurrentUserLogin().get() : "";
+
+        if(email.isEmpty()) throw new IdInvalidException("Invalid token!!!...");
+
+        //set refresh token = null
+        userService.updateRefreshToken("", email);
+
+        //set cookies
+        ResponseCookie cookies = ResponseCookie.from("refresh_token", "")
+                .httpOnly(true)
+                .maxAge(0)
+                .secure(true)
+                .path("/")
+                .build();
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookies.toString())
+                .body(ApiResponse.<Void>builder()
+                        .code(HttpStatus.OK.value())
+                        .error(null)
+                        .data(null)
+                        .message("Logout successfully!")
+                        .build());
+    }
+
 
 }

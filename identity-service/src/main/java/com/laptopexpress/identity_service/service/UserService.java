@@ -40,6 +40,10 @@ public class UserService {
         }
     }
 
+    public User handleFindUserByRefreshTokenAndEmail(String refreshToken, String email) {
+        return userRepository.findUserByRefreshTokenAndEmail(refreshToken, email);
+    }
+
     //handle create user
     public UserResponse handleCreateUser(UserCreateRequest request) throws IdInvalidException {
         //check username is unique
