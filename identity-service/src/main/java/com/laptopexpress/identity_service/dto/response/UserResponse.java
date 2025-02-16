@@ -12,32 +12,34 @@ import java.time.Instant;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
-    String id;
-    String username;
-    String email;
-    String phone;
-    String address;
-    String imageUrl;
-    GenderEnum gender;
-    boolean verified;
-//    String verificationCode;
-    Instant createdAt;
-    Instant updatedAt;
-    String createdBy;
-    String updatedBy;
-    RoleUser role;
 
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Data
-    @Builder
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class RoleUser {
-        long id;
-        String name;
-    }
+  String id;
+  String username;
+  String email;
+  String phone;
+  String address;
+  String imageUrl;
+  GenderEnum gender;
+  boolean verified;
+  //    String verificationCode;
+  Instant createdAt;
+  Instant updatedAt;
+  String createdBy;
+  String updatedBy;
+  RoleUser role;
+
+  @Getter
+  @Setter
+  @AllArgsConstructor
+  @NoArgsConstructor
+  @Data
+  @Builder
+  @FieldDefaults(level = AccessLevel.PRIVATE)
+  public static class RoleUser {
+
+    String id;
+    String name;
+  }
 
 
 }

@@ -1,5 +1,6 @@
 package com.laptopexpress.identity_service.dto.request;
 
+import com.laptopexpress.identity_service.entity.Role;
 import com.laptopexpress.identity_service.enums.GenderEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
@@ -14,22 +15,25 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCreateRequest {
-    @NotBlank(message = "Username cannot be empty!!")
-    String username;
 
-    @NotBlank(message = "Email cannot be empty!!")
-    String email;
+  @NotBlank(message = "Username cannot be empty!!")
+  String username;
 
-    @NotBlank(message = "Password cannot be empty!!")
-    String password;
+  @NotBlank(message = "Email cannot be empty!!")
+  String email;
 
-    @NotBlank(message = "Phone cannot be empty!!")
-    String phone;
+  @NotBlank(message = "Password cannot be empty!!")
+  String password;
 
-    String address;
+  @NotBlank(message = "Phone cannot be empty!!")
+  String phone;
 
-    String imageUrl;
+  String address;
 
-    @Enumerated(EnumType.STRING)
-    GenderEnum gender;
+  String imageUrl;
+
+  @Enumerated(EnumType.STRING)
+  GenderEnum gender;
+
+  Role role;
 }
