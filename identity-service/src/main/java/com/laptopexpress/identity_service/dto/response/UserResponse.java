@@ -13,29 +13,31 @@ import java.time.Instant;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
     String id;
-
     String username;
-
     String email;
-
-//    String password;
-
     String phone;
-
     String address;
-
     String imageUrl;
-
     GenderEnum gender;
-
-//    String refreshToken;
-
-//    String verificationCode;
-
     boolean verified;
+//    String verificationCode;
+    Instant createdAt;
+    Instant updatedAt;
+    String createdBy;
+    String updatedBy;
+    RoleUser role;
 
-    private Instant createdAt;
-    private Instant updatedAt;
-    private String createdBy;
-    private String updatedBy;
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class RoleUser {
+        long id;
+        String name;
+    }
+
+
 }
