@@ -30,8 +30,8 @@ public class SecurityConfiguration {
   String jwtKey;
 
   String[] PUBLIC_ENDPOINTS = {
-      "/users/registry", "/auth/register", "/auth/login", "/auth/refresh",
-      "/auth/logout", "/auth/my-account"
+      "/auth/register", "/auth/login", "/auth/refresh",
+      "/auth/introspect"
   };
 
 
