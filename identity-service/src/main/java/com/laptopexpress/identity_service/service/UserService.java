@@ -4,7 +4,6 @@ package com.laptopexpress.identity_service.service;
 import com.laptopexpress.identity_service.dto.request.UserCreateRequest;
 import com.laptopexpress.identity_service.dto.request.UserUpdateRequest;
 import com.laptopexpress.identity_service.dto.response.PageResponse;
-import com.laptopexpress.identity_service.dto.response.RoleResponse;
 import com.laptopexpress.identity_service.dto.response.UserResponse;
 import com.laptopexpress.identity_service.entity.Role;
 import com.laptopexpress.identity_service.entity.User;
@@ -34,7 +33,6 @@ public class UserService {
   UserRepository userRepository;
   UserMapper userMapper;
   PasswordEncoder passwordEncoder;
-  RoleService roleService;
   RoleRepository roleRepository;
 
   public User handleFindUserByEmail(String email) {

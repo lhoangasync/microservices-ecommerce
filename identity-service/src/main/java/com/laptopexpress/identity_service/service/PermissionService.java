@@ -85,4 +85,7 @@ public class PermissionService {
 
     permissionRepository.delete(permissionDB);
   }
+
+  // get permission by email
+
 }

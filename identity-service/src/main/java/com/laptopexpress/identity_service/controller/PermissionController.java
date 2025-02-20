@@ -5,7 +5,6 @@ import com.laptopexpress.identity_service.dto.request.PermissionRequest;
 import com.laptopexpress.identity_service.dto.response.ApiResponse;
 import com.laptopexpress.identity_service.dto.response.PageResponse;
 import com.laptopexpress.identity_service.dto.response.PermissionResponse;
-import com.laptopexpress.identity_service.dto.response.RoleResponse;
 import com.laptopexpress.identity_service.exception.IdInvalidException;
 import com.laptopexpress.identity_service.service.PermissionService;
 import lombok.AccessLevel;
