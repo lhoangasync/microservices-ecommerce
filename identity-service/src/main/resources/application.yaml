@@ -20,6 +20,6 @@ spring:
 #jwt
 jwt:
   secret-key: "leminhhoangleminhhoangleminhhoangleminhhoangleminhhoangleminhhoangleminhhoangleminhhoang"
-  token-validity-in-seconds: 60
+  token-validity-in-seconds: 300
   refresh-token-validity-in-seconds: 864000
 

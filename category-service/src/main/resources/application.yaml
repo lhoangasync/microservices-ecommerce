@@ -1,0 +1,18 @@
+server:
+  port: 8084
+  servlet:
+    context-path: /category
+spring:
+  application:
+    name: category-service
+  data:
+    mongodb:
+      uri: mongodb://root:root@localhost:27017/category-service?authSource=admin
+
+
+
+
+
+#jwt
+jwt:
+  secret-key: "leminhhoangleminhhoangleminhhoangleminhhoangleminhhoangleminhhoangleminhhoangleminhhoang"
