@@ -26,17 +26,27 @@ public class Product {
   String description;
   List<String> image;
   Category category;
-  Double price;
-  Integer quantity;
   String status;
-
-  StockStatus stockStatus;
-
+  List<Variant> variants;
 
   String createdBy;
   String updatedBy;
   Instant createdAt;
   Instant updatedAt;
+
+
+  @Getter
+  @Setter
+  @Builder
+  @FieldDefaults(level = AccessLevel.PRIVATE)
+  public static class Variant {
+
+    String variantId;
+    String variantName;
+    Double price;
+    Integer quantity;
+    StockStatus stockStatus;
+  }
 
 
   public void preSave(String currentUser) {

@@ -4,7 +4,6 @@ package com.laptopexpress.product_service.listener;
 import com.laptopexpress.event.dto.CategoryDeletedEvent;
 import com.laptopexpress.event.dto.CategoryUpdatedEvent;
 import com.laptopexpress.product_service.dto.response.ProductResponse.Category;
-import com.laptopexpress.product_service.entity.Product;
 import com.laptopexpress.product_service.mapper.ProductMapper;
 import com.laptopexpress.product_service.repository.ProductRepository;
 import lombok.AccessLevel;
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class CategoryUpdateEvent {
+public class CategoryEvent {
 
   ProductRepository productRepository;
   ProductMapper productMapper;

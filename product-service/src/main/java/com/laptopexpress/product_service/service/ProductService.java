@@ -17,6 +17,8 @@ import com.laptopexpress.product_service.repository.httpClient.CategoryClient;
 import com.laptopexpress.product_service.util.SecurityUtil;
 
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -40,70 +42,59 @@ public class ProductService {
   CategoryClient categoryClient;
 
 
-  // create product
+  // Create product
   public ProductResponse addProduct(ProductRequest productRequest) throws IdInvalidException {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String userId = SecurityUtil.getCurrentUserId();
 
     var categoryResponse = categoryClient.getCategoryById(productRequest.getCategoryId());
     if (categoryResponse == null || categoryResponse.getData() == null) {
       throw new IdInvalidException(
-          "Category with this ID = " + productRequest.getCategoryId() + " not found");
+          "Category with ID = " + productRequest.getCategoryId() + " not found");
     }
-
     var category = categoryResponse.getData();
     System.out.println(">>> check category: " + category);
 
-    System.out.println(authentication.getName());
     Product product = Product.builder()
         .userId(userId)
         .name(productRequest.getName())
-        .price(productRequest.getPrice())
         .description(productRequest.getDescription())
+        .image(productRequest.getImage())
         .category(Category.builder()
             .id(category.getId())
             .name(category.getName())
             .description(category.getDescription())
             .image(category.getImage())
             .build())
-        .image(productRequest.getImage())
         .status(productRequest.getStatus())
-        .stockStatus(productRequest.getStockStatus())
-        .quantity(productRequest.getQuantity())
+        .variants(productRequest.getVariants().stream().map(v -> Product.Variant.builder()
+            .variantId(UUID.randomUUID().toString())
+            .variantName(v.getVariantName())
+            .price(v.getPrice())
+            .quantity(v.getQuantity())
+            .stockStatus(v.getStockStatus())
+            .build()).collect(Collectors.toList()))
         .build();
+
+//    // check
+//    if (product.getVariants().size() < 2) {
+//      throw new IdInvalidException("Must have more than 2 variants!!");
+//    }
+//    if (product.getImage().size() < 3) {
+//      throw new IdInvalidException("Need at least 3 pictures!!");
+//    }
 
     Product savedProduct = productRepository.save(product);
     return productMapper.toProductResponse(savedProduct);
   }
 
-  // update product
-  public ProductResponse uppdateProduct(ProductUpdateRequest request) throws IdInvalidException {
+  // Update product
+  public ProductResponse updateProduct(ProductUpdateRequest request) throws IdInvalidException {
     Product product = productRepository.findById(request.getId())
-        .orElseThrow(() -> new IdInvalidException(
-            "Product with this ID = " + request.getId() + " not found"));
-
-    var categoryResponse = categoryClient.getCategoryById(request.getCategoryId());
-    if (categoryResponse == null || categoryResponse.getData() == null) {
-      throw new IdInvalidException(
-          "Category with this ID = " + request.getCategoryId() + " not found");
-    }
-
-    var category = categoryResponse.getData();
-    System.out.println(">>> check category: " + category);
+        .orElseThrow(
+            () -> new IdInvalidException("Product with ID = " + request.getId() + " not found"));
 
     if (request.getName() != null) {
       product.setName(request.getName());
-    }
-    if (request.getPrice() != null) {
-      product.setPrice(request.getPrice());
-    }
-    if (request.getCategoryId() != null) {
-      product.setCategory(Category.builder()
-          .id(category.getId())
-          .image(category.getImage())
-          .description(category.getDescription())
-          .name(category.getName())
-          .build());
     }
     if (request.getDescription() != null) {
       product.setDescription(request.getDescription());
@@ -114,11 +105,28 @@ public class ProductService {
     if (request.getStatus() != null) {
       product.setStatus(request.getStatus());
     }
-    if (request.getStockStatus() != null) {
-      product.setStockStatus(request.getStockStatus());
+    if (request.getCategoryId() != null) {
+      var categoryResponse = categoryClient.getCategoryById(request.getCategoryId());
+      if (categoryResponse == null || categoryResponse.getData() == null) {
+        throw new IdInvalidException(
+            "Category with ID = " + request.getCategoryId() + " not found");
+      }
+      var category = categoryResponse.getData();
+      product.setCategory(Category.builder()
+          .id(category.getId())
+          .name(category.getName())
+          .description(category.getDescription())
+          .image(category.getImage())
+          .build());
     }
-    if (request.getQuantity() != null) {
-      product.setQuantity(request.getQuantity());
+    if (request.getVariants() != null && !request.getVariants().isEmpty()) {
+      product.setVariants(request.getVariants().stream().map(v -> Product.Variant.builder()
+          .variantId(v.getVariantId() != null ? v.getVariantId() : UUID.randomUUID().toString())
+          .variantName(v.getVariantName())
+          .price(v.getPrice())
+          .quantity(v.getQuantity())
+          .stockStatus(v.getStockStatus())
+          .build()).collect(Collectors.toList()));
     }
 
     Product updatedProduct = productRepository.save(product);

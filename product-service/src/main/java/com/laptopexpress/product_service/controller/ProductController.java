@@ -50,7 +50,7 @@ public class ProductController {
         .code(HttpStatus.OK.value())
         .error(null)
         .message("Update product successfully!")
-        .data(productService.uppdateProduct(request))
+        .data(productService.updateProduct(request))
         .build();
   }
 

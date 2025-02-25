@@ -20,9 +20,19 @@ public class ProductRequest {
   String description;
   List<String> image;
   String categoryId;
-  Double price;
-  Integer quantity;
   String status;
+  List<VariantRequest> variants;
 
-  StockStatus stockStatus;
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @FieldDefaults(level = AccessLevel.PRIVATE)
+  public static class VariantRequest {
+
+    String variantName;
+    Double price;
+    Integer quantity;
+    StockStatus stockStatus;
+  }
 }

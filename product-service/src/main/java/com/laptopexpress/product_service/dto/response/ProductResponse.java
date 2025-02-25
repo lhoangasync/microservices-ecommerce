@@ -22,11 +22,9 @@ public class ProductResponse {
   String name;
   String description;
   List<String> image;
-  Double price;
-  Integer quantity;
   String status;
-  StockStatus stockStatus;
   Category category;
+  List<VariantResponse> variants;
 
   String createdBy;
   String updatedBy;
@@ -44,5 +42,19 @@ public class ProductResponse {
     String name;
     String description;
     String image;
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @FieldDefaults(level = AccessLevel.PRIVATE)
+  public static class VariantResponse {
+
+    String variantId;
+    String variantName;
+    Double price;
+    Integer quantity;
+    StockStatus stockStatus;
   }
 }
