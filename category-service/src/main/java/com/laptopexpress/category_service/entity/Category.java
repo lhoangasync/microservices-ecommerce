@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 @Getter
 @Setter
 @Builder
-@Document(value = "products")
+@Document(value = "categories")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Category {
 

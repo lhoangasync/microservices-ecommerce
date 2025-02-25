@@ -22,16 +22,27 @@ public class ProductResponse {
   String name;
   String description;
   List<String> image;
-  String categoryId;
   Double price;
   Integer quantity;
   String status;
-
   StockStatus stockStatus;
-
+  Category category;
 
   String createdBy;
   String updatedBy;
   Instant createdAt;
   Instant updatedAt;
+
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @FieldDefaults(level = AccessLevel.PRIVATE)
+  public static class Category {
+
+    String id;
+    String name;
+    String description;
+    String image;
+  }
 }

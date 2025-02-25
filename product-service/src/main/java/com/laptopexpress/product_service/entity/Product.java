@@ -1,5 +1,6 @@
 package com.laptopexpress.product_service.entity;
 
+import com.laptopexpress.product_service.dto.response.ProductResponse.Category;
 import com.laptopexpress.product_service.enums.StockStatus;
 import java.time.Instant;
 import java.util.List;
@@ -24,7 +25,7 @@ public class Product {
   String name;
   String description;
   List<String> image;
-  String categoryId;
+  Category category;
   Double price;
   Integer quantity;
   String status;

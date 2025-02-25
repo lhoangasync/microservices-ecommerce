@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +33,8 @@ public class ProductController {
   ProductService productService;
 
   @PostMapping("/create")
-  ApiResponse<ProductResponse> createProduct(@RequestBody ProductRequest productRequest) {
+  ApiResponse<ProductResponse> createProduct(@RequestBody ProductRequest productRequest)
+      throws IdInvalidException {
     return ApiResponse.<ProductResponse>builder()
         .code(HttpStatus.CREATED.value())
         .error(null)
@@ -71,6 +73,31 @@ public class ProductController {
         .error(null)
         .message("Get all products successfully!")
         .data(productService.fetchAllProducts(page, size))
+        .build();
+  }
+
+  @GetMapping("/category/{id}")
+  ApiResponse<PageResponse<ProductResponse>> getAllProductsByCategory(
+      @PathVariable String id,
+      @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+      @RequestParam(value = "size", required = false, defaultValue = "10") int size
+  ) {
+    return ApiResponse.<PageResponse<ProductResponse>>builder()
+        .code(HttpStatus.OK.value())
+        .error(null)
+        .message("Get all products successfully!")
+        .data(productService.fetchAllProductsByCategoryId(page, size, id))
+        .build();
+  }
+
+  @DeleteMapping("/delete/{id}")
+  ApiResponse<Void> deleteProduct(@PathVariable String id) throws IdInvalidException {
+    productService.deleteProduct(id);
+    return ApiResponse.<Void>builder()
+        .code(HttpStatus.OK.value())
+        .error(null)
+        .message("Delete product successfully!")
+        .data(null)
         .build();
   }
 

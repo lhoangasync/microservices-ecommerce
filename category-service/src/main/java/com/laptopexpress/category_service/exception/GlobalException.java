@@ -87,7 +87,7 @@ public class GlobalException {
     ApiResponse<Object> res = ApiResponse.builder()
         .code(HttpStatus.FORBIDDEN.value())
         .message(ex.getMessage())
-        .error("Forbidden !!!!!")
+        .error("Forbidden !!!!! (Category-Service)")
         .build();
     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);
   }

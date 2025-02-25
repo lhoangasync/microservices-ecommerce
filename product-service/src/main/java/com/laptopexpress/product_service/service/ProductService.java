@@ -6,12 +6,14 @@ import com.laptopexpress.product_service.dto.request.ProductRequest;
 import com.laptopexpress.product_service.dto.request.ProductUpdateRequest;
 import com.laptopexpress.product_service.dto.response.ProductResponse;
 
+import com.laptopexpress.product_service.dto.response.ProductResponse.Category;
 import com.laptopexpress.product_service.entity.Product;
 
 import com.laptopexpress.product_service.exception.IdInvalidException;
 import com.laptopexpress.product_service.mapper.ProductMapper;
 import com.laptopexpress.product_service.repository.ProductRepository;
 
+import com.laptopexpress.product_service.repository.httpClient.CategoryClient;
 import com.laptopexpress.product_service.util.SecurityUtil;
 
 import java.util.Optional;
@@ -35,20 +37,35 @@ public class ProductService {
 
   ProductRepository productRepository;
   ProductMapper productMapper;
+  CategoryClient categoryClient;
 
 
   // create product
-  public ProductResponse addProduct(ProductRequest productRequest) {
+  public ProductResponse addProduct(ProductRequest productRequest) throws IdInvalidException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String userId = SecurityUtil.getCurrentUserId();
+
+    var categoryResponse = categoryClient.getCategoryById(productRequest.getCategoryId());
+    if (categoryResponse == null || categoryResponse.getData() == null) {
+      throw new IdInvalidException(
+          "Category with this ID = " + productRequest.getCategoryId() + " not found");
+    }
+
+    var category = categoryResponse.getData();
+    System.out.println(">>> check category: " + category);
 
     System.out.println(authentication.getName());
     Product product = Product.builder()
         .userId(userId)
         .name(productRequest.getName())
         .price(productRequest.getPrice())
-        .categoryId(productRequest.getCategoryId())
         .description(productRequest.getDescription())
+        .category(Category.builder()
+            .id(category.getId())
+            .name(category.getName())
+            .description(category.getDescription())
+            .image(category.getImage())
+            .build())
         .image(productRequest.getImage())
         .status(productRequest.getStatus())
         .stockStatus(productRequest.getStockStatus())
@@ -65,6 +82,15 @@ public class ProductService {
         .orElseThrow(() -> new IdInvalidException(
             "Product with this ID = " + request.getId() + " not found"));
 
+    var categoryResponse = categoryClient.getCategoryById(request.getCategoryId());
+    if (categoryResponse == null || categoryResponse.getData() == null) {
+      throw new IdInvalidException(
+          "Category with this ID = " + request.getCategoryId() + " not found");
+    }
+
+    var category = categoryResponse.getData();
+    System.out.println(">>> check category: " + category);
+
     if (request.getName() != null) {
       product.setName(request.getName());
     }
@@ -72,7 +98,12 @@ public class ProductService {
       product.setPrice(request.getPrice());
     }
     if (request.getCategoryId() != null) {
-      product.setCategoryId(request.getCategoryId());
+      product.setCategory(Category.builder()
+          .id(category.getId())
+          .image(category.getImage())
+          .description(category.getDescription())
+          .name(category.getName())
+          .build());
     }
     if (request.getDescription() != null) {
       product.setDescription(request.getDescription());
@@ -102,7 +133,7 @@ public class ProductService {
     return productMapper.toProductResponse(product);
   }
 
-  //fetch all products
+  // fetch all products
   public PageResponse<ProductResponse> fetchAllProducts(int page, int size) {
     Sort sort = Sort.by("createdAt").descending();
     Pageable pageable = PageRequest.of(page - 1, size, sort);
@@ -116,6 +147,30 @@ public class ProductService {
         .totalElements(pageData.getTotalElements())
         .data(pageData.getContent().stream().map(productMapper::toProductResponse).toList())
         .build();
+  }
+
+  // fetch all products by category id
+  public PageResponse<ProductResponse> fetchAllProductsByCategoryId(int page, int size,
+      String categoryId) {
+    Sort sort = Sort.by("createdAt").descending();
+    Pageable pageable = PageRequest.of(page - 1, size, sort);
+    var pageData = productRepository.findByCategory_Id(categoryId, pageable);
+
+    return PageResponse.<ProductResponse>builder()
+        .currentPage(page)
+        .pageSize(pageData.getSize())
+        .totalPages(pageData.getTotalPages())
+        .totalElements(pageData.getTotalElements())
+        .data(pageData.getContent().stream().map(productMapper::toProductResponse).toList())
+        .build();
+
+  }
+
+  // delete product
+  public void deleteProduct(String id) throws IdInvalidException {
+    Product product = productRepository.findById(id)
+        .orElseThrow(() -> new IdInvalidException("Product with this ID = " + id + " not found"));
+    productRepository.delete(product);
   }
 
 }
