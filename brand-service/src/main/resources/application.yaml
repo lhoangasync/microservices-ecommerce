@@ -1,0 +1,22 @@
+server:
+  port: 8086
+  servlet:
+    context-path: /brand
+spring:
+  application:
+    name: brand-service
+  data:
+    mongodb:
+      uri: mongodb://root:root@localhost:27017/brand-service?authSource=admin
+  kafka:
+    bootstrap-servers: localhost:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+
+
+
+#jwt
+jwt:
+  secret-key: "leminhhoangleminhhoangleminhhoangleminhhoangleminhhoangleminhhoangleminhhoangleminhhoang"

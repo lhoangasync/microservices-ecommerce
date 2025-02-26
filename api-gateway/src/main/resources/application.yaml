@@ -28,3 +28,15 @@ spring:
             - Path=${app.api-prefix}/category/**
           filters:
             - StripPrefix=2
+        - id: search_service
+          uri: http://localhost:8085
+          predicates:
+            - Path=${app.api-prefix}/search/**
+          filters:
+            - StripPrefix=2
+        - id: brand_service
+          uri: http://localhost:8086
+          predicates:
+            - Path=${app.api-prefix}/brand/**
+          filters:
+            - StripPrefix=2

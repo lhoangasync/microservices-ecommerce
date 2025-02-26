@@ -1,6 +1,6 @@
-package com.laptopexpress.product_service.config;
+package com.laptopexpress.brand_service.config;
 
-import com.laptopexpress.product_service.util.SecurityUtil;
+import com.laptopexpress.brand_service.util.SecurityUtil;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
 import javax.crypto.SecretKey;
@@ -35,8 +35,8 @@ public class SecurityConfiguration {
   String[] PUBLIC_ENDPOINTS = {
       "/auth/register", "/auth/login", "/auth/refresh",
       "/auth/introspect",
-      "/products/get-all",
-      "/products/get-by-id/**",
+      "/brands/get-all",
+      "/brands/get-by-id/**",
   };
 
 
