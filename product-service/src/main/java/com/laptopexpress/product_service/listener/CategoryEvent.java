@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 public class CategoryEvent {
 
   ProductRepository productRepository;
-  ProductMapper productMapper;
 
   @KafkaListener(topics = "category-update-topic")
   public void updateCategoryInProduct(CategoryUpdatedEvent categoryUpdatedEvent) {

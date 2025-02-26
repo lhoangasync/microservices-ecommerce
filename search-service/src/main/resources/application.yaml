@@ -1,0 +1,19 @@
+server:
+  port: 8085
+  servlet:
+    context-path: /search
+
+spring:
+  elasticsearch:
+    uris: http://localhost:9200
+    index:
+      products: products
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+  kafka:
+    bootstrap-servers: localhost:9094
+    consumer:
+      group-id: search-service-group
+      auto-offset-reset: earliest
