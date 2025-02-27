@@ -24,12 +24,26 @@ public class ProductResponse {
   List<String> image;
   String status;
   Category category;
+  Brand brand;
   List<VariantResponse> variants;
 
   String createdBy;
   String updatedBy;
   Instant createdAt;
   Instant updatedAt;
+
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @FieldDefaults(level = AccessLevel.PRIVATE)
+  public static class Brand {
+
+    String id;
+    String name;
+    String description;
+    String image;
+  }
 
   @Data
   @Builder

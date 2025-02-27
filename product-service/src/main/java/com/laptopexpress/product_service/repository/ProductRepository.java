@@ -15,4 +15,6 @@ public interface ProductRepository extends MongoRepository<Product, String> {
   Page<Product> findByCategory_Id(String categoryId, Pageable pageable);
 
   void deleteByCategory_Id(String categoryId);
+
+  List<Product> findByBrand_Id(String brandId);
 }

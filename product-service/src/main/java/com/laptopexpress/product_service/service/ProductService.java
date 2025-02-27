@@ -6,13 +6,16 @@ import com.laptopexpress.product_service.dto.request.ProductRequest;
 import com.laptopexpress.product_service.dto.request.ProductUpdateRequest;
 import com.laptopexpress.product_service.dto.response.ProductResponse;
 
+import com.laptopexpress.product_service.dto.response.ProductResponse.Brand;
 import com.laptopexpress.product_service.dto.response.ProductResponse.Category;
 import com.laptopexpress.product_service.entity.Product;
 
+import com.laptopexpress.product_service.entity.Product.Variant;
 import com.laptopexpress.product_service.exception.IdInvalidException;
 import com.laptopexpress.product_service.mapper.ProductMapper;
 import com.laptopexpress.product_service.repository.ProductRepository;
 
+import com.laptopexpress.product_service.repository.httpClient.BrandClient;
 import com.laptopexpress.product_service.repository.httpClient.CategoryClient;
 import com.laptopexpress.product_service.util.SecurityUtil;
 
@@ -40,11 +43,20 @@ public class ProductService {
   ProductRepository productRepository;
   ProductMapper productMapper;
   CategoryClient categoryClient;
+  BrandClient brandClient;
 
 
   // Create product
   public ProductResponse addProduct(ProductRequest productRequest) throws IdInvalidException {
     String userId = SecurityUtil.getCurrentUserId();
+
+    var brandResponse = brandClient.getBrandById(productRequest.getBrandId());
+    if (brandResponse == null || brandResponse.getData() == null) {
+      throw new IdInvalidException(
+          "Brand with this ID = " + productRequest.getBrandId() + " not found");
+    }
+    var brand = brandResponse.getData();
+    System.out.println(">>> check brand: " + brand);
 
     var categoryResponse = categoryClient.getCategoryById(productRequest.getCategoryId());
     if (categoryResponse == null || categoryResponse.getData() == null) {
@@ -59,6 +71,12 @@ public class ProductService {
         .name(productRequest.getName())
         .description(productRequest.getDescription())
         .image(productRequest.getImage())
+        .brand(Brand.builder()
+            .id(brand.getId())
+            .name(brand.getName())
+            .description(brand.getDescription())
+            .image(brand.getImage())
+            .build())
         .category(Category.builder()
             .id(category.getId())
             .name(category.getName())
@@ -66,7 +84,7 @@ public class ProductService {
             .image(category.getImage())
             .build())
         .status(productRequest.getStatus())
-        .variants(productRequest.getVariants().stream().map(v -> Product.Variant.builder()
+        .variants(productRequest.getVariants().stream().map(v -> Variant.builder()
             .variantId(UUID.randomUUID().toString())
             .variantName(v.getVariantName())
             .price(v.getPrice())
@@ -119,6 +137,20 @@ public class ProductService {
           .image(category.getImage())
           .build());
     }
+    if (request.getBrandId() != null) {
+      var brandResponse = brandClient.getBrandById(request.getBrandId());
+      if (brandResponse == null || brandResponse.getData() == null) {
+        throw new IdInvalidException("Brand with ID = " + request.getBrandId() + " not found");
+      }
+      var brand = brandResponse.getData();
+      product.setBrand(Brand.builder()
+          .id(brand.getId())
+          .name(brand.getName())
+          .description(brand.getDescription())
+          .image(brand.getImage())
+          .build());
+    }
+
     if (request.getVariants() != null && !request.getVariants().isEmpty()) {
       product.setVariants(request.getVariants().stream().map(v -> Product.Variant.builder()
           .variantId(v.getVariantId() != null ? v.getVariantId() : UUID.randomUUID().toString())

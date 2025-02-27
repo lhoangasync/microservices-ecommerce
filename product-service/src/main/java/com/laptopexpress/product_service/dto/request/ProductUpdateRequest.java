@@ -25,6 +25,7 @@ public class ProductUpdateRequest {
   String description;
   List<String> image;
   String categoryId;
+  String brandId;
   String status;
   List<VariantRequest> variants;
 

@@ -9,6 +9,7 @@ import com.laptopexpress.brand_service.entity.Brand;
 import com.laptopexpress.brand_service.exception.IdInvalidException;
 import com.laptopexpress.brand_service.mapper.BrandMapper;
 import com.laptopexpress.brand_service.repository.BrandRepository;
+import com.laptopexpress.event.dto.BrandUpdatedEvent;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,6 +29,7 @@ public class BrandService {
 
   BrandRepository brandRepository;
   BrandMapper brandMapper;
+  KafkaTemplate<String, Object> kafkaTemplate;
 
   // create a brand
   public BrandResponse createBrand(BrandRequest brandRequest) {
@@ -55,6 +58,14 @@ public class BrandService {
       brand.setImage(request.getImage());
     }
     Brand savedBrand = brandRepository.save(brand);
+    BrandUpdatedEvent event = BrandUpdatedEvent.builder()
+        .id(savedBrand.getId())
+        .name(savedBrand.getName())
+        .description(savedBrand.getDescription())
+        .image(savedBrand.getImage())
+        .build();
+
+    kafkaTemplate.send("brand-update-topic", event);
     return brandMapper.toBrandResponse(savedBrand);
   }
 
@@ -89,7 +100,7 @@ public class BrandService {
     Brand brand = brandRepository.findById(id)
         .orElseThrow(
             () -> new IdInvalidException("Brand with this ID = " + id + " not found"));
-    
+
     brandRepository.delete(brand);
   }
 }

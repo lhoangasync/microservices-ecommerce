@@ -20,6 +20,7 @@ public class ProductRequest {
   String description;
   List<String> image;
   String categoryId;
+  String brandId;
   String status;
   List<VariantRequest> variants;
 
