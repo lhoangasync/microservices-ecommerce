@@ -86,6 +86,7 @@ public class DatabaseInitializer implements CommandLineRunner {
           .phone("09017329**")
           .gender(GenderEnum.MALE)
           .username("admin")
+          .verified(true)
           .password(passwordEncoder.encode("123456"))
           .build();
 

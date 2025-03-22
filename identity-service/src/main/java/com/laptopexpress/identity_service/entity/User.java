@@ -18,57 +18,61 @@ import java.time.Instant;
 @Entity
 @Table(name = "users")
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
 
-    String username;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  String id;
 
-    String email;
+  String username;
 
-    String password;
+  String email;
 
-    String phone;
+  String password;
 
-    String address;
+  String phone;
 
-    String imageUrl;
+  String address;
 
-    @Enumerated(EnumType.STRING)
-    GenderEnum gender;
+  String imageUrl;
 
-    @Column(columnDefinition = "MEDIUMTEXT")
-    String refreshToken;
+  @Enumerated(EnumType.STRING)
+  GenderEnum gender;
 
-    String verificationCode;
+  @Column(columnDefinition = "MEDIUMTEXT")
+  String refreshToken;
 
-    boolean verified;
+  String verificationCode;
+  
+  @Column(name = "otp_expiry")
+  Instant otpExpiry;
 
-    Instant createdAt;
-    Instant updatedAt;
-    String createdBy;
-    String updatedBy;
+  boolean verified;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    Role role;
+  Instant createdAt;
+  Instant updatedAt;
+  String createdBy;
+  String updatedBy;
 
-    @PrePersist
-    public void handleBeforeCreate() {
-        this.createdBy = AuthenticationService.getCurrentUserLogin().isPresent()
-                ? AuthenticationService.getCurrentUserLogin().get()
-                : "";
+  @ManyToOne
+  @JoinColumn(name = "role_id")
+  Role role;
 
-        this.createdAt = Instant.now();
-    }
+  @PrePersist
+  public void handleBeforeCreate() {
+    this.createdBy = AuthenticationService.getCurrentUserLogin().isPresent()
+        ? AuthenticationService.getCurrentUserLogin().get()
+        : "";
 
-    @PreUpdate
-    public void handleBeforeUpdate() {
-        this.updatedBy = AuthenticationService.getCurrentUserLogin().isPresent()
-                ? AuthenticationService.getCurrentUserLogin().get()
-                : "";
+    this.createdAt = Instant.now();
+  }
 
-        this.updatedAt = Instant.now();
-    }
+  @PreUpdate
+  public void handleBeforeUpdate() {
+    this.updatedBy = AuthenticationService.getCurrentUserLogin().isPresent()
+        ? AuthenticationService.getCurrentUserLogin().get()
+        : "";
+
+    this.updatedAt = Instant.now();
+  }
 
 }

@@ -1,8 +1,10 @@
-package com.laptopexpress.identity_service.config;
+package com.laptopexpress.notification_service.configuration;
 
-import com.laptopexpress.identity_service.service.AuthenticationService;
+import com.laptopexpress.notification_service.util.SecurityUtil;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,13 +15,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtException;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
 @EnableWebSecurity
@@ -31,7 +34,8 @@ public class SecurityConfiguration {
 
   String[] PUBLIC_ENDPOINTS = {
       "/auth/register", "/auth/login", "/auth/refresh",
-      "/auth/introspect", "/auth/verify-otp", "/auth/resend-otp",
+      "/auth/introspect",
+      "/email/send",
   };
 
 
@@ -55,7 +59,7 @@ public class SecurityConfiguration {
   private SecretKey getSecretKey() {
     byte[] keyBytes = Base64.from(jwtKey).decode();
     return new SecretKeySpec(keyBytes, 0, keyBytes.length,
-        AuthenticationService.JWT_ALGORITHM.getName());
+        SecurityUtil.JWT_ALGORITHM.getName());
   }
 
   @Bean
@@ -71,7 +75,7 @@ public class SecurityConfiguration {
   @Bean
   public JwtDecoder jwtDecoder() {
     NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(
-        getSecretKey()).macAlgorithm(AuthenticationService.JWT_ALGORITHM).build();
+        getSecretKey()).macAlgorithm(SecurityUtil.JWT_ALGORITHM).build();
     return token -> {
       try {
         return jwtDecoder.decode(token);

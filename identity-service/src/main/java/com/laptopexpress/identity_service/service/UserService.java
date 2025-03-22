@@ -1,8 +1,10 @@
 package com.laptopexpress.identity_service.service;
 
 
+import com.laptopexpress.event.dto.NotificationEvent;
 import com.laptopexpress.identity_service.dto.request.UserCreateRequest;
 import com.laptopexpress.identity_service.dto.request.UserUpdateRequest;
+import com.laptopexpress.identity_service.dto.request.VerifyOtpRequest;
 import com.laptopexpress.identity_service.dto.response.PageResponse;
 import com.laptopexpress.identity_service.dto.response.UserResponse;
 import com.laptopexpress.identity_service.entity.Role;
@@ -11,6 +13,8 @@ import com.laptopexpress.identity_service.exception.IdInvalidException;
 import com.laptopexpress.identity_service.mapper.UserMapper;
 import com.laptopexpress.identity_service.repository.RoleRepository;
 import com.laptopexpress.identity_service.repository.UserRepository;
+import java.security.SecureRandom;
+import java.time.Instant;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +39,7 @@ public class UserService {
   UserMapper userMapper;
   PasswordEncoder passwordEncoder;
   RoleRepository roleRepository;
+  KafkaTemplate<String, Object> kafkaTemplate;
 
   public User handleFindUserByEmail(String email) {
     return userRepository.findUserByEmail(email);
@@ -75,8 +81,20 @@ public class UserService {
       }
     }
 
+//    NotificationEvent notificationEvent = NotificationEvent.builder()
+//        .channel("EMAIL")
+//        .recipient(request.getEmail())
+//        .subject("Welcome our LAPTOP shop!!")
+//        .body("Hello MR. " + request.getEmail())
+//        .build();
+//
+//    //Publish message to kafka
+//    kafkaTemplate.send("notifications-email", notificationEvent);
+
     User savedUser = userRepository.save(user);
     log.info("User created: {}", savedUser);
+
+    handleGenerateOTP(request.getEmail());
 
     return userMapper.toUserResponse(savedUser);
   }
@@ -139,6 +157,70 @@ public class UserService {
     User updatedUser = userRepository.save(user);
 
     return userMapper.toUserResponse(updatedUser);
+  }
+
+  //generate code OTP
+  public String handleGenerateOTP(String email) throws IdInvalidException {
+    User user = userRepository.findUserByEmail(email);
+    if (user == null) {
+      throw new IdInvalidException("User with this email = " + email + " not found1");
+    }
+
+    //Generate code OTP
+    String otp = generateRandomOTP(6);
+    user.setVerificationCode(otp);
+    user.setOtpExpiry(Instant.now().plusSeconds(60)); //1min
+    userRepository.save(user);
+
+    NotificationEvent notificationEvent = NotificationEvent.builder()
+        .channel("EMAIL")
+        .recipient(email)
+        .subject("Your OTP Code")
+        .body("Your OTP code is: " + otp + ". It is valid for 5 minutes.")
+        .build();
+
+    kafkaTemplate.send("notifications-email", notificationEvent);
+    return otp;
+
+  }
+
+  // Verify OTP
+  public boolean handleVerifyOTP(VerifyOtpRequest request) throws IdInvalidException {
+    User user = userRepository.findUserByEmail(request.getEmail());
+    if (user == null) {
+      throw new IdInvalidException("User with this email = " + request.getEmail() + " not found2");
+    }
+
+    //check otp
+    if (user.getVerificationCode() == null || user.getOtpExpiry() == null) {
+      throw new IdInvalidException(
+          "User with this email = " + request.getEmail() + " have no verification code");
+    }
+
+    if (Instant.now().isAfter(user.getOtpExpiry())) {
+      throw new IdInvalidException("User with this email = " + request.getEmail() + " has expired");
+    }
+
+    if (!user.getVerificationCode().equals(request.getOtp())) {
+      throw new IdInvalidException(
+          "User with this email = " + request.getEmail() + " has invalid verification code");
+    }
+
+    user.setVerified(true);
+    user.setVerificationCode(null); //delete otp after verify
+    user.setOtpExpiry(null);
+    userRepository.save(user);
+
+    return true;
+  }
+
+  private String generateRandomOTP(int length) {
+    SecureRandom random = new SecureRandom();
+    StringBuilder otp = new StringBuilder();
+    for (int i = 0; i < length; i++) {
+      otp.append(random.nextInt(10));
+    }
+    return otp.toString();
   }
 
 }

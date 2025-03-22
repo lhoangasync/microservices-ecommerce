@@ -2,7 +2,6 @@ package com.laptopexpress.identity_service.dto.request;
 
 import com.laptopexpress.identity_service.entity.Role;
 import com.laptopexpress.identity_service.enums.GenderEnum;
-import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;

@@ -3,6 +3,7 @@ package com.laptopexpress.identity_service.controller;
 import com.laptopexpress.identity_service.dto.request.IntrospectRequest;
 import com.laptopexpress.identity_service.dto.request.LoginRequest;
 import com.laptopexpress.identity_service.dto.request.UserCreateRequest;
+import com.laptopexpress.identity_service.dto.request.VerifyOtpRequest;
 import com.laptopexpress.identity_service.dto.response.ApiResponse;
 import com.laptopexpress.identity_service.dto.response.IntrospectResponse;
 import com.laptopexpress.identity_service.dto.response.LoginResponse;
@@ -69,40 +70,42 @@ public class AuthenticationController {
   }
 
   @PostMapping("/login")
-  ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+  public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request)
+      throws IdInvalidException {
     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
         request.getEmail(), request.getPassword());
+
     Authentication authentication = authenticationManagerBuilder.getObject()
         .authenticate(authenticationToken);
+
+    User currentUser = userService.handleFindUserByEmail(request.getEmail());
+
+    if (currentUser == null) {
+      throw new IdInvalidException("User not found");
+    }
+    if (!currentUser.isVerified()) {
+      throw new IdInvalidException("Account not verified. Please verify your OTP.");
+    }
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
 
     LoginResponse loginResponse = new LoginResponse();
-    User currentUser = userService.handleFindUserByEmail(request.getEmail());
-    if (currentUser != null) {
-      LoginResponse.UserLogin userLogin = new LoginResponse.UserLogin(
-          currentUser.getId(),
-          currentUser.getEmail(),
-          currentUser.getUsername(),
-          currentUser.getRole()
-      );
+    LoginResponse.UserLogin userLogin = new LoginResponse.UserLogin(
+        currentUser.getId(),
+        currentUser.getEmail(),
+        currentUser.getUsername(),
+        currentUser.getRole()
+    );
+    loginResponse.setUser(userLogin);
 
-      loginResponse.setUser(userLogin);
-    }
-
-    //generate token
     String accessToken = authenticationService.generateAccessToken(authentication.getName(),
         loginResponse);
     loginResponse.setToken(accessToken);
 
-    //generate refresh token
     String refreshToken = authenticationService.generateRefreshToken(request.getEmail(),
         loginResponse);
-
-    //update user + refresh token
     userService.updateRefreshToken(refreshToken, request.getEmail());
 
-    // set cookies
     ResponseCookie cookies = ResponseCookie.from("refresh_token", refreshToken)
         .httpOnly(true)
         .maxAge(refreshTokenValidityInSeconds)
@@ -231,5 +234,26 @@ public class AuthenticationController {
             .build());
   }
 
+  @PostMapping("/verify-otp")
+  ApiResponse<String> verifyOtp(@RequestBody VerifyOtpRequest verifyOtpRequest)
+      throws IdInvalidException {
+    return ApiResponse.<String>builder()
+        .code(HttpStatus.OK.value())
+        .error(null)
+        .data(null)
+        .message(userService.handleVerifyOTP(verifyOtpRequest) ? "Account verified successfully"
+            : "Verification failed")
+        .build();
+  }
+
+  @PostMapping("/resend-otp")
+  ApiResponse<String> resendOTP(@RequestParam String email) throws IdInvalidException {
+    return ApiResponse.<String>builder()
+        .code(HttpStatus.OK.value())
+        .error(null)
+        .data(userService.handleGenerateOTP(email))
+        .message("OTP has been resent to: " + email)
+        .build();
+  }
 
 }

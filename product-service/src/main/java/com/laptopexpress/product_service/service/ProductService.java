@@ -19,19 +19,18 @@ import com.laptopexpress.product_service.repository.httpClient.BrandClient;
 import com.laptopexpress.product_service.repository.httpClient.CategoryClient;
 import com.laptopexpress.product_service.util.SecurityUtil;
 
-import java.util.Optional;
+
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.stereotype.Service;
 
 @Service
