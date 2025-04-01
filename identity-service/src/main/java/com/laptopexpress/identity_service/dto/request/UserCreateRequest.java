@@ -24,7 +24,7 @@ public class UserCreateRequest {
   @NotBlank(message = "Password cannot be empty!!")
   String password;
 
-  @NotBlank(message = "Phone cannot be empty!!")
+  //  @NotBlank(message = "Phone cannot be empty!!")
   String phone;
 
   String address;

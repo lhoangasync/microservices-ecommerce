@@ -29,7 +29,7 @@ public class EmailService {
   public EmailResponse sendEmail(SendEmailRequest request) throws IdInvalidException {
     EmailRequest emailRequest = EmailRequest.builder()
         .sender(Sender.builder()
-            .name("lhoangdev DotCom")
+            .name("LAPTOP SHOP LHOANGDEV")
             .email("vatcvietmy123456@gmail.com")
             .build())
         .to(List.of(request.getTo()))
