@@ -28,4 +28,12 @@ class TImages {
       "assets/images/animations/sammy-line-man-receives-a-mail.png";
   static const String verifyIllustration =
       "assets/images/animations/sammy-line-travel-backpack-with-passport-and-air-ticket.gif";
+
+  // -- Category Icons
+  static const String computerIcon = "assets/icons/categories/computer.png";
+
+  // -- Banners
+  static const String promoBanner1 = "assets/images/banners/banner1.png";
+  static const String promoBanner2 = "assets/images/banners/banner2.png";
+  static const String promoBanner3 = "assets/images/banners/banner3.png";
 }
