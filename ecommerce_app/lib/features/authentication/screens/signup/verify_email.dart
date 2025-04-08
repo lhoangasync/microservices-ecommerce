@@ -64,7 +64,7 @@ class VerifyEmailScreen extends StatelessWidget {
               ),
               const SizedBox(height: TSizes.spaceBtwItems),
               Text(
-                'thinh2004@gmail.com',
+                'lhoangdev@gmail.com',
                 style: Theme.of(context).textTheme.labelLarge,
                 textAlign: TextAlign.center,
               ),

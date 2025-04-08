@@ -1,6 +1,4 @@
-import 'package:ecommerce_app/common/widgets/success_screen/success_screen.dart';
 import 'package:ecommerce_app/features/authentication/screens/login/login.dart';
-import 'package:ecommerce_app/utils/constants/colors.dart';
 import 'package:ecommerce_app/utils/constants/image_strings.dart';
 import 'package:ecommerce_app/utils/constants/sizes.dart';
 import 'package:ecommerce_app/utils/constants/text_strings.dart';
@@ -8,7 +6,6 @@ import 'package:ecommerce_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
 
 class ResetPassword extends StatelessWidget {
   const ResetPassword({super.key});
@@ -16,13 +13,16 @@ class ResetPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:  AppBar(
+      appBar: AppBar(
         automaticallyImplyLeading: false,
         actions: [
-          IconButton(onPressed: () => Get.back(),icon: const Icon(CupertinoIcons.clear))
+          IconButton(
+            onPressed: () => Get.back(),
+            icon: const Icon(CupertinoIcons.clear),
+          ),
         ],
       ),
-      body:  SingleChildScrollView(
+      body: SingleChildScrollView(
         padding: EdgeInsets.all(TSizes.defaultSpace),
         child: Column(
           children: [
@@ -52,15 +52,18 @@ class ResetPassword extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: (){},
+                onPressed: () => Get.to(() => LoginScreen()),
                 child: const Text(TTexts.tContinue),
               ),
             ),
             const SizedBox(height: TSizes.spaceBtwItems),
             SizedBox(
               width: double.infinity,
-              child: TextButton(onPressed: (){},child: const Text(TTexts.resendEmail)),
-            )
+              child: TextButton(
+                onPressed: () {},
+                child: const Text(TTexts.resendEmail),
+              ),
+            ),
           ],
         ),
       ),

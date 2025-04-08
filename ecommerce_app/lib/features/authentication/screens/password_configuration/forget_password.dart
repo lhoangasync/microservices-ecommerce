@@ -1,12 +1,6 @@
-import 'package:ecommerce_app/common/widgets/success_screen/success_screen.dart';
-import 'package:ecommerce_app/features/authentication/screens/login/login.dart';
 import 'package:ecommerce_app/features/authentication/screens/password_configuration/reset_password.dart';
-import 'package:ecommerce_app/utils/constants/colors.dart';
-import 'package:ecommerce_app/utils/constants/image_strings.dart';
 import 'package:ecommerce_app/utils/constants/sizes.dart';
 import 'package:ecommerce_app/utils/constants/text_strings.dart';
-import 'package:ecommerce_app/utils/helpers/helper_functions.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -23,17 +17,32 @@ class ForgetPassword extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(TTexts.forgetPasswordTitle, style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: TSizes.spaceBtwItems),
-            Text(TTexts.forgetPasswordSubTitle, style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: TSizes.spaceBtwSections * 2),
-            TextFormField(
-              decoration: const InputDecoration(labelText: TTexts.email, prefixIcon: Icon(Iconsax.direct_right)),
+            Text(
+              TTexts.forgetPasswordTitle,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: TSizes.spaceBtwItems),
-           SizedBox(width: double.infinity, child: ElevatedButton(onPressed: () => Get.off(() => const ResetPassword()), child: const Text(TTexts.submit)))
+            Text(
+              TTexts.forgetPasswordSubTitle,
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: TSizes.spaceBtwSections * 2),
+            TextFormField(
+              decoration: const InputDecoration(
+                labelText: TTexts.email,
+                prefixIcon: Icon(Iconsax.direct_right),
+              ),
+            ),
+            const SizedBox(height: TSizes.spaceBtwItems),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Get.off(() => const ResetPassword()),
+                child: const Text(TTexts.submit),
+              ),
+            ),
           ],
-        )
+        ),
       ),
     );
   }
