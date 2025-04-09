@@ -58,6 +58,9 @@ class HomeScreen extends StatelessWidget {
                       TImages.promoBanner3,
                     ],
                   ),
+
+                  // Heading
+                  TSectionHeading(title: 'Popular Products',onPressed: (){}),
                   const SizedBox(height: TSizes.spaceBtwSections),
 
                   // Popular products

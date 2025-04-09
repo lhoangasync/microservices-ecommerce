@@ -18,7 +18,7 @@ class TSectionHeading extends StatelessWidget {
     return Row(
       children: [
         Text(
-          'Popular Categories',
+          title,
           style: Theme.of(
             context,
           ).textTheme.headlineSmall!.apply(color: textColor),
