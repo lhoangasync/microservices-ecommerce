@@ -1,10 +1,13 @@
+import 'package:ecommerce_app/features/personalization/screens/settings/settings.dart';
+import 'package:ecommerce_app/features/shop/screens/wishlist/wishlist.dart';
 import 'package:ecommerce_app/utils/constants/colors.dart';
 import 'package:ecommerce_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 
-import 'features/shop/screen/home/home.dart';
-import 'features/shop/screen/store/store.dart';
+import 'features/shop/screens/home/home.dart';
+import 'features/shop/screens/store/store.dart';
 
 class NavigationMenu extends StatelessWidget {
   const NavigationMenu({super.key});
@@ -13,6 +16,7 @@ class NavigationMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(NavigationController());
     final darkMode = THelperFunctions.isDarkMode(context);
+
     return Scaffold(
       bottomNavigationBar: Obx(
         () => NavigationBar(
@@ -26,14 +30,12 @@ class NavigationMenu extends StatelessWidget {
               darkMode
                   ? TColors.white.withValues(alpha: 0.1)
                   : TColors.black.withValues(alpha: 0.1),
+
           destinations: const [
-            NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-            NavigationDestination(icon: Icon(Icons.shop), label: 'Store'),
-            NavigationDestination(
-              icon: Icon(Icons.favorite),
-              label: 'Wishlist',
-            ),
-            NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
+            NavigationDestination(icon: Icon(Iconsax.home), label: 'Home'),
+            NavigationDestination(icon: Icon(Iconsax.shop), label: 'Store'),
+            NavigationDestination(icon: Icon(Iconsax.heart), label: 'Wishlist'),
+            NavigationDestination(icon: Icon(Iconsax.user), label: 'Profile'),
           ],
         ),
       ),
@@ -44,10 +46,11 @@ class NavigationMenu extends StatelessWidget {
 
 class NavigationController extends GetxController {
   final Rx<int> selectedIndex = 0.obs;
+
   final screens = [
     const HomeScreen(),
     const StoreScreen(),
-    Container(color: Colors.orange),
-    Container(color: Colors.blue),
-  ]; // Danh sách màn hình
+    const FavouriteScreen(),
+    const SettingsScreen(),
+  ];
 }

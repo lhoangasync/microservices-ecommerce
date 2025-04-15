@@ -21,7 +21,8 @@ dependencies:
   url_launcher: ^6.3.1
   flutter_native_splash: ^2.4.5
   smooth_page_indicator: ^1.2.1
-  carousel_slider: ^5.0.0
+  
+  
   # Icons
   cupertino_icons: ^1.0.8
   iconsax: ^0.0.8
@@ -29,7 +30,11 @@ dependencies:
   # State manage
   get: ^4.7.2
   get_storage: ^2.1.1
-  
+
+  # Product specific
+  readmore: ^3.0.0
+  flutter_rating_bar: ^4.0.1
+  carousel_slider: ^5.0.0
   
 
 dev_dependencies:
@@ -53,6 +58,9 @@ flutter:
     - assets/icons/categories/
     - assets/images/banners/
     - assets/images/products/
+    - assets/images/user/
+    - assets/images/reviews/
+    - assets/icons/payment_methods/
 
   fonts:
     - family: Poppins

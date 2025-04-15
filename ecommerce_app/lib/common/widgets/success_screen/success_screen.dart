@@ -1,10 +1,8 @@
 import 'package:ecommerce_app/common/styles/spacing_style.dart';
-import 'package:ecommerce_app/features/authentication/screens/login/login.dart';
 import 'package:ecommerce_app/utils/constants/sizes.dart';
 import 'package:ecommerce_app/utils/constants/text_strings.dart';
 import 'package:ecommerce_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class SuccessScreen extends StatelessWidget {
   const SuccessScreen({
@@ -17,6 +15,7 @@ class SuccessScreen extends StatelessWidget {
 
   final String image, title, subTitle;
   final VoidCallback? onPressed;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +50,7 @@ class SuccessScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () => Get.to(() => const LoginScreen()),
+                  onPressed: onPressed,
                   child: const Text(TTexts.tContinue),
                 ),
               ),

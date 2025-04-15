@@ -2,8 +2,8 @@ import 'package:ecommerce_app/utils/constants/colors.dart';
 import 'package:ecommerce_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 
-class TcircularIcon extends StatelessWidget {
-  const TcircularIcon({
+class TCircularIcon extends StatelessWidget {
+  const TCircularIcon({
     super.key,
     this.width,
     this.height,
@@ -25,7 +25,6 @@ class TcircularIcon extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      // ignore: deprecated_member_use
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(100),
         color:

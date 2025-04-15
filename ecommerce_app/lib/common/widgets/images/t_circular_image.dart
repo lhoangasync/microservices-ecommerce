@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../utils/constants/colors.dart';
-import '../../../utils/constants/image_strings.dart';
 import '../../../utils/constants/sizes.dart';
 import '../../../utils/helpers/helper_functions.dart';
+
 class TCircularImage extends StatelessWidget {
   const TCircularImage({
     super.key,
@@ -13,7 +13,8 @@ class TCircularImage extends StatelessWidget {
     required this.image,
     this.fit = BoxFit.cover,
     this.padding = TSizes.sm,
-    this.isNetworkImage = false, this.backgroundColor,
+    this.isNetworkImage = false,
+    this.backgroundColor,
   });
   final BoxFit? fit;
   final String image;
@@ -28,17 +29,23 @@ class TCircularImage extends StatelessWidget {
       height: height,
       padding: const EdgeInsets.all(TSizes.sm),
       decoration: BoxDecoration(
-        color: backgroundColor ?? (THelperFunctions.isDarkMode(context) ? TColors.black : TColors.white),
+        color:
+            backgroundColor ??
+            (THelperFunctions.isDarkMode(context)
+                ? TColors.black
+                : TColors.white),
         borderRadius: BorderRadius.circular(100),
       ),
       child: Center(
         child: Image(
-            fit: fit,
-            image: isNetworkImage ? NetworkImage(image) : AssetImage(image) as ImageProvider,
-            color: overlayColor,
+          fit: fit,
+          image:
+              isNetworkImage
+                  ? NetworkImage(image)
+                  : AssetImage(image) as ImageProvider,
+          color: overlayColor,
         ),
-      )
-
+      ),
     );
   }
 }

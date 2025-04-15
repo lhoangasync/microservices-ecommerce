@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../utils/constants/colors.dart';
 import '../../../utils/constants/sizes.dart';
 
 class TRoundedImage extends StatelessWidget {
@@ -9,7 +8,7 @@ class TRoundedImage extends StatelessWidget {
     this.border,
     this.padding,
     this.onPressed,
-    this.width ,
+    this.width,
     this.height,
     this.applyImageRadius = true,
     required this.imageUrl,
@@ -18,7 +17,8 @@ class TRoundedImage extends StatelessWidget {
     this.isNetWorkImage = false,
     this.borderRadius = TSizes.md,
   });
-  final double? width,height;
+
+  final double? width, height;
   final String imageUrl;
   final bool applyImageRadius;
   final BoxBorder? border;
@@ -28,18 +28,32 @@ class TRoundedImage extends StatelessWidget {
   final bool isNetWorkImage;
   final VoidCallback? onPressed;
   final double borderRadius;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onPressed,
-      child : Container(
-        width:  width,
+      child: Container(
+        width: width,
         height: height,
         padding: padding,
-        decoration: BoxDecoration(border:border,color: backgroundColor,borderRadius:  BorderRadius.circular(borderRadius)),
+        decoration: BoxDecoration(
+          border: border,
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(borderRadius),
+        ),
         child: ClipRRect(
-            borderRadius: applyImageRadius ? BorderRadius.circular(borderRadius) : BorderRadius.zero,
-            child: Image(fit: BoxFit.contain, image: isNetWorkImage ? NetworkImage(imageUrl) : AssetImage(imageUrl) as ImageProvider)
+          borderRadius:
+              applyImageRadius
+                  ? BorderRadius.circular(borderRadius)
+                  : BorderRadius.zero,
+          child: Image(
+            fit: BoxFit.contain,
+            image:
+                isNetWorkImage
+                    ? NetworkImage(imageUrl)
+                    : AssetImage(imageUrl) as ImageProvider,
+          ),
         ),
       ),
     );
