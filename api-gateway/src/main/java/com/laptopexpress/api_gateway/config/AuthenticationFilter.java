@@ -12,7 +12,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -48,6 +47,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
       "/product/products/get-by-id/.*",
       "/category/categories/get-all",
       "/category/categories/get-by-id/.*",
+      "/file/media/download/.*",
   };
 
   @Override
