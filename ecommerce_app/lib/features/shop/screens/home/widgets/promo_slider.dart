@@ -10,7 +10,9 @@ import '../../../../../utils/constants/sizes.dart';
 
 class TPromoSlider extends StatelessWidget {
   const TPromoSlider({super.key, required this.banners});
+
   final List<String> banners;
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(HomeController());
@@ -18,7 +20,7 @@ class TPromoSlider extends StatelessWidget {
       children: [
         CarouselSlider(
           options: CarouselOptions(
-            viewportFraction: 0.8,
+            viewportFraction: 1,
             onPageChanged: (index, _) => controller.updatePageIndicator(index),
           ),
           items: banners.map((url) => TRoundedImage(imageUrl: url)).toList(),

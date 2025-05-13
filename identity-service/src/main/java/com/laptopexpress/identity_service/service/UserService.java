@@ -2,6 +2,7 @@ package com.laptopexpress.identity_service.service;
 
 
 import com.laptopexpress.event.dto.NotificationEvent;
+import com.laptopexpress.identity_service.dto.request.ResetPasswordRequest;
 import com.laptopexpress.identity_service.dto.request.UserCreateRequest;
 import com.laptopexpress.identity_service.dto.request.UserUpdateRequest;
 import com.laptopexpress.identity_service.dto.request.VerifyOtpRequest;
@@ -13,6 +14,7 @@ import com.laptopexpress.identity_service.exception.IdInvalidException;
 import com.laptopexpress.identity_service.mapper.UserMapper;
 import com.laptopexpress.identity_service.repository.RoleRepository;
 import com.laptopexpress.identity_service.repository.UserRepository;
+import com.laptopexpress.identity_service.repository.httpClient.FileClient;
 import java.security.SecureRandom;
 import java.time.Instant;
 import lombok.AccessLevel;
@@ -27,6 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Service
@@ -40,6 +43,8 @@ public class UserService {
   PasswordEncoder passwordEncoder;
   RoleRepository roleRepository;
   KafkaTemplate<String, Object> kafkaTemplate;
+
+  FileClient fileClient;
 
   public User handleFindUserByEmail(String email) {
     return userRepository.findUserByEmail(email);
@@ -135,6 +140,12 @@ public class UserService {
             () -> new IdInvalidException(
                 "User with this ID = " + request.getId() + " not found"));
 
+    if (request.getFirstName() != null) {
+      user.setFirstName(request.getFirstName());
+    }
+    if (request.getLastName() != null) {
+      user.setLastName(request.getLastName());
+    }
     if (request.getUsername() != null) {
       user.setUsername(request.getUsername());
     }
@@ -166,10 +177,14 @@ public class UserService {
       throw new IdInvalidException("User with this email = " + email + " not found1");
     }
 
+//    if (user.isVerified()) {
+//      throw new IdInvalidException("This account has been verified!");
+//    }
+
     //Generate code OTP
     String otp = generateRandomOTP(6);
     user.setVerificationCode(otp);
-    user.setOtpExpiry(Instant.now().plusSeconds(60)); //1min
+    user.setOtpExpiry(Instant.now().plusSeconds(300)); //5min
     userRepository.save(user);
 
     NotificationEvent notificationEvent = NotificationEvent.builder()
@@ -221,6 +236,33 @@ public class UserService {
       otp.append(random.nextInt(10));
     }
     return otp.toString();
+  }
+
+  public boolean handleResetPassword(ResetPasswordRequest request) throws IdInvalidException {
+    User user = userRepository.findUserByEmail(request.getEmail());
+    if (user == null) {
+      throw new IdInvalidException("User with this email = " + request.getEmail() + " not found");
+    }
+
+    user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+    userRepository.save(user);
+    return true;
+  }
+
+  public UserResponse updateAvatar(MultipartFile file) throws IdInvalidException {
+    String userId = AuthenticationService.getCurrentUserId();
+
+    User user = userRepository.findById(userId).orElseThrow(
+        () -> new IdInvalidException("User with this id = " + userId + " not found")
+    );
+
+    // upload file - invoke an api File Service
+    var response = fileClient.uploadMedia(file);
+
+    user.setImageUrl(response.getData().getUrl());
+
+    return userMapper.toUserResponse(userRepository.save(user));
+
   }
 
 }

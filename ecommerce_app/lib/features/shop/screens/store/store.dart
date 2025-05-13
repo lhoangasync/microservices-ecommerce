@@ -3,6 +3,7 @@ import 'package:ecommerce_app/common/widgets/custom_shapes/container/search_cont
 import 'package:ecommerce_app/common/widgets/layouts/grid_layout.dart';
 import 'package:ecommerce_app/common/widgets/products/cart/cart_menu_icon.dart';
 import 'package:ecommerce_app/common/widgets/texts/section_heading.dart';
+import 'package:ecommerce_app/features/shop/controllers/category_controller.dart';
 import 'package:ecommerce_app/features/shop/screens/brand/all_brands.dart';
 import 'package:ecommerce_app/features/shop/screens/store/widgets/category_tab.dart';
 import 'package:ecommerce_app/utils/helpers/helper_functions.dart';
@@ -20,15 +21,19 @@ class StoreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final categories = CategoryController.instance.allCategories;
+
     return DefaultTabController(
-      length: 5,
+      length: categories.length,
       child: Scaffold(
         appBar: TAppBar(
           title: Text(
             'Store',
             style: Theme.of(context).textTheme.headlineMedium,
           ),
-          actions: [TCartCounterIcon(onPressed: () {})],
+          actions: [
+            TCartCounterIcon(onPressed: () {}, iconColor: TColors.black),
+          ],
         ),
         body: NestedScrollView(
           headerSliverBuilder: (_, innerBoxIsScrolled) {
@@ -75,25 +80,19 @@ class StoreScreen extends StatelessWidget {
                   ),
                 ),
                 bottom: TTabBar(
-                  tabs: [
-                    Tab(child: Text('Sports')),
-                    Tab(child: Text('Furniture')),
-                    Tab(child: Text('Electronics')),
-                    Tab(child: Text('Clothes')),
-                    Tab(child: Text('Cosmetics')),
-                  ],
+                  tabs:
+                      categories
+                          .map((category) => Tab(child: Text(category.name)))
+                          .toList(),
                 ),
               ),
             ];
           },
           body: TabBarView(
-            children: [
-              TCategoryTab(),
-              TCategoryTab(),
-              TCategoryTab(),
-              TCategoryTab(),
-              TCategoryTab(),
-            ],
+            children:
+                categories
+                    .map((category) => TCategoryTab(category: category))
+                    .toList(),
           ),
         ),
       ),

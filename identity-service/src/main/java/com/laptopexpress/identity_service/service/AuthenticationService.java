@@ -111,6 +111,16 @@ public class AuthenticationService {
   }
 
 
+  public static String getCurrentUserId() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.getPrincipal() instanceof Jwt) {
+      Jwt jwt = (Jwt) authentication.getPrincipal();
+      Map<String, Object> userClaims = (Map<String, Object>) jwt.getClaims().get("user");
+      return (String) userClaims.get("id");
+    }
+    return null;
+  }
+
   //Generate Access Token
   public String generateAccessToken(String email, LoginResponse loginResponse) {
     LoginResponse.UserInsideToken userInsideToken = LoginResponse.UserInsideToken.builder()

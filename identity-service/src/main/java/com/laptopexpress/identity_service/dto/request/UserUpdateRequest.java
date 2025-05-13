@@ -14,16 +14,18 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserUpdateRequest {
-    @NotBlank(message = "User ID cannot be empty!!")
-    String id;
 
-    String username;
-    String email;
-    String phone;
-    String address;
-    String imageUrl;
+  @NotBlank(message = "User ID cannot be empty!!")
+  String id;
+  String firstName;
+  String lastName;
+  String username;
+  String email;
+  String phone;
+  String address;
+  String imageUrl;
 
-    @Enumerated(EnumType.STRING)
-    GenderEnum gender;
+  @Enumerated(EnumType.STRING)
+  GenderEnum gender;
 }
 

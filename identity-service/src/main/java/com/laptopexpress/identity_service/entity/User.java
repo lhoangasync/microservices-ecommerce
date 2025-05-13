@@ -23,6 +23,10 @@ public class User {
   @GeneratedValue(strategy = GenerationType.UUID)
   String id;
 
+  String firstName;
+
+  String lastName;
+  
   String username;
 
   String email;
@@ -42,7 +46,7 @@ public class User {
   String refreshToken;
 
   String verificationCode;
-  
+
   @Column(name = "otp_expiry")
   Instant otpExpiry;
 

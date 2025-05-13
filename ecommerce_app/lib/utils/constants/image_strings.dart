@@ -53,6 +53,9 @@ class TImages {
   static const String verifyIllustration =
       "assets/images/animations/sammy-line-travel-backpack-with-passport-and-air-ticket.gif";
 
+  static const String docerAnimation =
+      "assets/images/animations/141594-animation-of-docer.json";
+
   // -- OnBoarding Texts
   static const String onBoardingImage1 =
       "assets/images/on_boarding_images/sammy-line-searching.gif";

@@ -1,4 +1,6 @@
-import 'package:ecommerce_app/features/authentication/screens/onboarding/onboarding.dart';
+import 'package:ecommerce_app/bindings/general_bindings.dart';
+import 'package:ecommerce_app/routes/app_routes.dart';
+import 'package:ecommerce_app/utils/constants/colors.dart';
 import 'package:ecommerce_app/utils/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,7 +19,14 @@ class App extends StatelessWidget {
       theme: TAppTheme.lightTheme,
       darkTheme: TAppTheme.darkTheme,
       debugShowCheckedModeBanner: false,
-      home: OnBoardingScreen(),
+      initialBinding: GeneralBindings(),
+      getPages: AppRoutes.pages,
+
+      // show loader or circular progress indicator meanwhile authentication repository is deciding to show relevant screen.
+      home: const Scaffold(
+        backgroundColor: TColors.primary,
+        body: Center(child: CircularProgressIndicator(color: Colors.white)),
+      ),
     );
   }
 }

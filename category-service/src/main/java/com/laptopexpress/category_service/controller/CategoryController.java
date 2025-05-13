@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -69,7 +70,7 @@ public class CategoryController {
     return ApiResponse.<PageResponse<CategoryResponse>>builder()
         .code(HttpStatus.OK.value())
         .error(null)
-        .message("Get all products successfully!")
+        .message("Get all categories successfully!")
         .data(categoryService.fetchAllCategories(page, size))
         .build();
   }

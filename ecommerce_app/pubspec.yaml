@@ -21,7 +21,11 @@ dependencies:
   url_launcher: ^6.3.1
   flutter_native_splash: ^2.4.5
   smooth_page_indicator: ^1.2.1
-  
+  lottie: ^3.3.1
+  connectivity_plus: ^6.1.4
+  shimmer: ^3.0.0
+  image_picker: ^1.1.2
+  cached_network_image: ^3.4.1
   
   # Icons
   cupertino_icons: ^1.0.8
@@ -30,11 +34,17 @@ dependencies:
   # State manage
   get: ^4.7.2
   get_storage: ^2.1.1
+  jwt_decoder: ^2.0.1
 
   # Product specific
   readmore: ^3.0.0
   flutter_rating_bar: ^4.0.1
   carousel_slider: ^5.0.0
+
+  # firebase
+  firebase_core: ^3.13.0
+  
+  
   
 
 dev_dependencies:
@@ -53,14 +63,15 @@ flutter:
   assets:
     - assets/logos/
     - assets/icons/brands/
-    - assets/images/on_boarding_images/
-    - assets/images/animations/
-    - assets/icons/categories/
+    # - assets/images/content/
     - assets/images/banners/
-    - assets/images/products/
-    - assets/images/user/
     - assets/images/reviews/
+    - assets/images/products/
+    - assets/icons/categories/
+    - assets/images/animations/
     - assets/icons/payment_methods/
+    - assets/images/on_boarding_images/
+    - assets/images/user/
 
   fonts:
     - family: Poppins

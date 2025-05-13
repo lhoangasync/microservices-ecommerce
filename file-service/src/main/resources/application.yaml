@@ -16,7 +16,7 @@ spring:
 app:
   file:
     storage-dir: D:/TDTU/upload
-    download-prefix: http://localhost:8888/api/v1/file/media/download/
+    download-prefix: http://192.168.0.117:8888/api/v1/file/media/download/
 #jwt
 jwt:
   secret-key: "leminhhoangleminhhoangleminhhoangleminhhoangleminhhoangleminhhoangleminhhoangleminhhoang"

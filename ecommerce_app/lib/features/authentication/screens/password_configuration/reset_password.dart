@@ -1,3 +1,4 @@
+import 'package:ecommerce_app/features/authentication/controller/signup/verify_email_controller.dart';
 import 'package:ecommerce_app/features/authentication/screens/login/login.dart';
 import 'package:ecommerce_app/utils/constants/image_strings.dart';
 import 'package:ecommerce_app/utils/constants/sizes.dart';
@@ -12,6 +13,7 @@ class ResetPassword extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final email = VerifyEmailController.instance.email.value;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -31,6 +33,15 @@ class ResetPassword extends StatelessWidget {
               image: const AssetImage(TImages.deliveredEmailIllustration),
               width: THelperFunctions.screenWidth() * 0.6,
             ),
+
+            const SizedBox(height: TSizes.spaceBtwSections),
+
+            Text(
+              email,
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+
             const SizedBox(height: TSizes.spaceBtwItems),
 
             // Title & Subtitle
@@ -39,6 +50,7 @@ class ResetPassword extends StatelessWidget {
               style: Theme.of(context).textTheme.headlineMedium,
               textAlign: TextAlign.center,
             ),
+
             const SizedBox(height: TSizes.spaceBtwItems),
 
             Text(
@@ -46,24 +58,25 @@ class ResetPassword extends StatelessWidget {
               style: Theme.of(context).textTheme.labelMedium,
               textAlign: TextAlign.center,
             ),
+
             const SizedBox(height: TSizes.spaceBtwItems),
 
             // Buttons
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () => Get.to(() => LoginScreen()),
-                child: const Text(TTexts.tContinue),
+                onPressed: () => Get.offAll(() => LoginScreen()),
+                child: const Text(TTexts.done),
               ),
             ),
-            const SizedBox(height: TSizes.spaceBtwItems),
-            SizedBox(
-              width: double.infinity,
-              child: TextButton(
-                onPressed: () {},
-                child: const Text(TTexts.resendEmail),
-              ),
-            ),
+            // const SizedBox(height: TSizes.spaceBtwItems),
+            // SizedBox(
+            //   width: double.infinity,
+            //   child: TextButton(
+            //     onPressed: () {},
+            //     child: const Text(TTexts.resendEmail),
+            //   ),
+            // ),
           ],
         ),
       ),

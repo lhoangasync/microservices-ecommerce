@@ -15,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -82,6 +83,17 @@ public class UserController {
         .error(null)
         .data(null)
         .message("Delete user successfully")
+        .build();
+  }
+
+  @PutMapping("/avatar")
+  ApiResponse<UserResponse> updateAvatar(@RequestParam("file") MultipartFile file)
+      throws IdInvalidException {
+    return ApiResponse.<UserResponse>builder()
+        .code(HttpStatus.OK.value())
+        .error(null)
+        .message("Update avatar successfully")
+        .data(userService.updateAvatar(file))
         .build();
   }
 }

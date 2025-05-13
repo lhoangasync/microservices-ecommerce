@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecommerce_app/common/widgets/shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 
 import '../../../utils/constants/colors.dart';
@@ -12,8 +14,10 @@ class TVerticalImageText extends StatelessWidget {
     this.textColor = TColors.white,
     this.backgroundColor,
     this.onTap,
+    this.isNetworkImage = false,
   });
 
+  final bool isNetworkImage;
   final String image, title;
   final Color textColor;
   final Color? backgroundColor;
@@ -22,6 +26,7 @@ class TVerticalImageText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dark = THelperFunctions.isDarkMode(context);
+
     return GestureDetector(
       onTap: onTap,
       child: Padding(
@@ -38,11 +43,28 @@ class TVerticalImageText extends StatelessWidget {
                       backgroundColor ?? (dark ? TColors.dark : TColors.white),
                   borderRadius: BorderRadius.circular(100),
                 ),
-                child: Center(
-                  child: Image(
-                    image: AssetImage(image),
-                    fit: BoxFit.cover,
-                    color: dark ? TColors.white : TColors.dark,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: Center(
+                    child:
+                        isNetworkImage
+                            ? CachedNetworkImage(
+                              fit: BoxFit.cover,
+                              imageUrl: image,
+
+                              width: 56,
+                              height: 56,
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) =>
+                                      TShimmerEffect(width: 56, height: 56),
+                              errorWidget:
+                                  (context, url, error) => Icon(Icons.error),
+                            )
+                            : Image(
+                              image: AssetImage(image),
+                              fit: BoxFit.cover,
+                              color: dark ? TColors.white : TColors.dark,
+                            ),
                   ),
                 ),
               ),

@@ -1,4 +1,12 @@
 class TValidator {
+  // Empty Text Validation
+  static String? validateEmptyText(String? fieldName, String? value) {
+    if (value == null || value.isEmpty) {
+      return '$fieldName is required';
+    }
+    return null;
+  }
+
   static String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Email is required.';
@@ -47,7 +55,7 @@ class TValidator {
       return 'Phone number is required.';
     }
 
-    // Regular expression for phone number validation (assuming a 10-digit US phone number format)
+    // Regular expression for phone number validation (assuming a 10-digit VN phone number format)
     final phoneRegExp = RegExp(r'^\d{10}$');
 
     if (!phoneRegExp.hasMatch(value)) {

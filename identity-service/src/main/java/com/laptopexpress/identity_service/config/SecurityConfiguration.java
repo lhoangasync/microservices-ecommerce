@@ -32,6 +32,7 @@ public class SecurityConfiguration {
   String[] PUBLIC_ENDPOINTS = {
       "/auth/register", "/auth/login", "/auth/refresh",
       "/auth/introspect", "/auth/verify-otp", "/auth/resend-otp",
+      "/auth/reset-password",
   };
 
 

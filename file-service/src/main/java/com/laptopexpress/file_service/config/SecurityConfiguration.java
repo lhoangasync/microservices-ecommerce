@@ -36,7 +36,8 @@ public class SecurityConfiguration {
   String[] PUBLIC_ENDPOINTS = {
       "/auth/register", "/auth/login", "/auth/refresh",
       "/auth/introspect",
-      "/media/download/**"
+      "/media/download/**",
+      "/media/upload/**",
   };
 
 

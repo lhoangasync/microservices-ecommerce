@@ -11,42 +11,50 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class LoginResponse {
-    @JsonProperty("access_token")
-    private String token;
-    private LoginResponse.UserLogin user;
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    @Data
-    public static class UserLogin {
-        private String id;
-        private String email;
-        private String username;
-        private Role role;
-    }
+  @JsonProperty("access_token")
+  private String token;
+  private LoginResponse.UserLogin user;
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    @Data
-    public static class UserGetAccount {
-        private UserLogin user;
-    }
+  @Getter
+  @Setter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Builder
+  @Data
+  public static class UserLogin {
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    @Data
-    public static class UserInsideToken {
-        private String id;
-        private String email;
-        private String username;
-    }
+    private String id;
+    private String email;
+    private String username;
+    private String imageUrl;
+    private String phone;
+    private String firstName;
+    private String lastName;
+    private Role role;
+  }
+
+  @Getter
+  @Setter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Builder
+  @Data
+  public static class UserGetAccount {
+
+    private UserLogin user;
+  }
+
+  @Getter
+  @Setter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Builder
+  @Data
+  public static class UserInsideToken {
+
+    private String id;
+    private String email;
+    private String username;
+  }
 }

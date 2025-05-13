@@ -2,6 +2,7 @@ package com.laptopexpress.identity_service.controller;
 
 import com.laptopexpress.identity_service.dto.request.IntrospectRequest;
 import com.laptopexpress.identity_service.dto.request.LoginRequest;
+import com.laptopexpress.identity_service.dto.request.ResetPasswordRequest;
 import com.laptopexpress.identity_service.dto.request.UserCreateRequest;
 import com.laptopexpress.identity_service.dto.request.VerifyOtpRequest;
 import com.laptopexpress.identity_service.dto.response.ApiResponse;
@@ -70,7 +71,7 @@ public class AuthenticationController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request)
+  public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request)
       throws IdInvalidException {
     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
         request.getEmail(), request.getPassword());
@@ -94,6 +95,10 @@ public class AuthenticationController {
         currentUser.getId(),
         currentUser.getEmail(),
         currentUser.getUsername(),
+        currentUser.getImageUrl(),
+        currentUser.getPhone(),
+        currentUser.getFirstName(),
+        currentUser.getLastName(),
         currentUser.getRole()
     );
     loginResponse.setUser(userLogin);
@@ -113,9 +118,17 @@ public class AuthenticationController {
         .path("/")
         .build();
 
+//    return ResponseEntity.ok()
+//        .header(HttpHeaders.SET_COOKIE, cookies.toString())
+//        .body(loginResponse);
+
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, cookies.toString())
-        .body(loginResponse);
+        .body(ApiResponse.<LoginResponse>builder()
+            .data(loginResponse)
+            .message("Login successfully!")
+            .code(HttpStatus.OK.value())
+            .build());
   }
 
   @GetMapping("/my-account")
@@ -129,6 +142,10 @@ public class AuthenticationController {
       userLogin.setId(currentUser.getId());
       userLogin.setEmail(currentUser.getEmail());
       userLogin.setUsername(currentUser.getUsername());
+      userLogin.setImageUrl(currentUser.getImageUrl());
+      userLogin.setPhone(currentUser.getPhone());
+      userLogin.setFirstName(currentUser.getFirstName());
+      userLogin.setLastName(currentUser.getLastName());
       userLogin.setRole(currentUser.getRole());
 
       userGetAccount.setUser(userLogin);
@@ -172,6 +189,10 @@ public class AuthenticationController {
           currentUser.getId(),
           currentUser.getEmail(),
           currentUser.getUsername(),
+          currentUser.getImageUrl(),
+          currentUser.getPhone(),
+          currentUser.getFirstName(),
+          currentUser.getLastName(),
           currentUser.getRole()
       );
       result.setUser(userLogin);
@@ -255,5 +276,27 @@ public class AuthenticationController {
         .message("OTP has been resent to: " + email)
         .build();
   }
+
+  @PostMapping("/reset-password")
+  public ApiResponse<String> resetPassword(@RequestBody ResetPasswordRequest request)
+      throws IdInvalidException {
+    boolean success = userService.handleResetPassword(request);
+    if (success) {
+      return ApiResponse.<String>builder()
+          .code(HttpStatus.OK.value())
+          .error(null)
+          .message("Reset password successfully!")
+          .data(null)
+          .build();
+    } else {
+      return ApiResponse.<String>builder()
+          .code(HttpStatus.BAD_REQUEST.value())
+          .error("Failed to reset password")
+          .message("Could not reset password")
+          .data(null)
+          .build();
+    }
+  }
+
 
 }
