@@ -1,4 +1,5 @@
 import 'package:ecommerce_app/common/widgets/texts/section_heading.dart';
+import 'package:ecommerce_app/features/shop/models/product_model.dart';
 import 'package:ecommerce_app/features/shop/screens/product_details/widgets/bottom_add_to_cart.dart';
 import 'package:ecommerce_app/features/shop/screens/product_details/widgets/product_attributes.dart';
 import 'package:ecommerce_app/features/shop/screens/product_details/widgets/product_detail_image_slider.dart';
@@ -12,7 +13,9 @@ import 'package:iconsax/iconsax.dart';
 import 'package:readmore/readmore.dart';
 
 class ProductDetailScreen extends StatelessWidget {
-  const ProductDetailScreen({super.key});
+  const ProductDetailScreen({super.key, required this.product});
+
+  final ProductModel product;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +25,7 @@ class ProductDetailScreen extends StatelessWidget {
         child: Column(
           children: [
             // Product Image Slider
-            TProductImageSlider(),
+            TProductImageSlider(product: product),
 
             // Product Details
             Padding(
@@ -37,10 +40,10 @@ class ProductDetailScreen extends StatelessWidget {
                   TRatingAndShare(),
 
                   // Price, Title, Stock & Brand
-                  TProductMetaData(),
+                  TProductMetaData(product: product),
 
                   // Attributes
-                  TProductAttributes(),
+                  TProductAttributes(product: product),
                   const SizedBox(height: TSizes.spaceBtwSections),
 
                   // Checkout Button
@@ -60,7 +63,7 @@ class ProductDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: TSizes.spaceBtwItems),
                   ReadMoreText(
-                    'This a Product descriptuon for Blue Nike Sleeve less vest. LE MINH HOANG LE MINH HOANG LE MINH HOANG LE MINH HOANG LE MINH HOANG ',
+                    product.description,
                     trimLines: 2,
                     trimMode: TrimMode.Line,
                     trimCollapsedText: 'Show more',

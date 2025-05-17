@@ -1,5 +1,7 @@
 import 'package:ecommerce_app/data/repositories/categories/categories_repository.dart';
+import 'package:ecommerce_app/data/repositories/products/product_repository.dart';
 import 'package:ecommerce_app/features/shop/models/category_model.dart';
+import 'package:ecommerce_app/features/shop/models/product_model.dart';
 import 'package:ecommerce_app/utils/popups/loader.dart';
 import 'package:get/get.dart';
 
@@ -9,6 +11,7 @@ class CategoryController extends GetxController {
   final isLoading = false.obs;
   final categoryRepository = Get.put(CategoriesRepository());
   RxList<CategoryModel> allCategories = <CategoryModel>[].obs;
+  RxList<CategoryModel> featuredCategories = <CategoryModel>[].obs;
   // Pagination control
   final RxInt currentPage = 1.obs;
   final RxInt totalPages = 1.obs;
@@ -32,9 +35,12 @@ class CategoryController extends GetxController {
         size: pageSize,
       );
 
-      print("--- check category response: $response");
       // update categories list
       allCategories.assignAll(response.data);
+
+      featuredCategories.assignAll(
+        allCategories.where((category) => category.isParent ?? false),
+      );
 
       // Update pagination info
       totalPages.value = response.totalPages;
@@ -43,6 +49,36 @@ class CategoryController extends GetxController {
     } finally {
       // Remove loader
       isLoading.value = false;
+    }
+  }
+
+  Future<List<CategoryModel>> getSubCategories(String categoryId) async {
+    try {
+      final subCategogies = await categoryRepository.getSubCategories(
+        categoryId,
+      );
+      return subCategogies;
+    } catch (e) {
+      TLoaders.errorSnackBar(title: 'On Snap!', message: e.toString());
+      return [];
+    }
+  }
+
+  // get product by category
+  Future<List<ProductModel>> getCategoryProducts({
+    required String categoryId,
+    int limit = 4,
+  }) async {
+    try {
+      final products = await ProductRepository.instance.getProductsByCategory(
+        categoryId: categoryId,
+        page: currentPage.value,
+        size: limit < 0 ? pageSize : limit,
+      );
+      return products.data;
+    } catch (e) {
+      TLoaders.errorSnackBar(title: 'On Snap!', message: e.toString());
+      return [];
     }
   }
 }

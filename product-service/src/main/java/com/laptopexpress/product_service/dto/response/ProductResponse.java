@@ -21,10 +21,16 @@ public class ProductResponse {
   String userId;
   String name;
   String description;
+  Integer quantity;
   List<String> image;
   String status;
+  Double price;
+  Double salePrice;
   Category category;
   Brand brand;
+  String thumbnail;
+
+  List<ProductAttributeResponse> attributes;
   List<VariantResponse> variants;
 
   String createdBy;
@@ -43,6 +49,7 @@ public class ProductResponse {
     String name;
     String description;
     String image;
+    Boolean isFeature;
   }
 
   @Data
@@ -56,6 +63,20 @@ public class ProductResponse {
     String name;
     String description;
     String image;
+    String parentId;
+    Boolean isParent;
+    int level;
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @FieldDefaults(level = AccessLevel.PRIVATE)
+  public static class ProductAttributeResponse {
+
+    String name;
+    List<String> values;
   }
 
   @Data
@@ -67,8 +88,24 @@ public class ProductResponse {
 
     String variantId;
     String variantName;
+    String image;
+    String description;
     Double price;
+    Double salePrice;
     Integer quantity;
     StockStatus stockStatus;
+
+    List<AttributeValueResponse> attributeVariant;
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @FieldDefaults(level = AccessLevel.PRIVATE)
+  public static class AttributeValueResponse {
+
+    String name;
+    String value;
   }
 }

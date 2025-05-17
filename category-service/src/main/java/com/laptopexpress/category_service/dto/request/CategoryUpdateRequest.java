@@ -18,5 +18,6 @@ public class CategoryUpdateRequest {
   String name;
   String description;
   String image;
+  String parentId;
 
 }

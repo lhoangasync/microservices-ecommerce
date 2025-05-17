@@ -28,6 +28,7 @@ public class PermissionInterceptorConfiguration implements WebMvcConfigurer {
         "/auth/**",
         "/brands/get-all",
         "/brands/get-by-id/**",
+        "/brands/create"
     };
 
     registry.addInterceptor(getPermissionInterceptor())

@@ -2,12 +2,16 @@ package com.laptopexpress.product_service.controller;
 
 import com.laptopexpress.product_service.dto.ApiResponse;
 import com.laptopexpress.product_service.dto.PageResponse;
+import com.laptopexpress.product_service.dto.request.FilterVariantRequest;
 import com.laptopexpress.product_service.dto.request.ProductRequest;
 import com.laptopexpress.product_service.dto.request.ProductUpdateRequest;
+import com.laptopexpress.product_service.dto.response.FilterVariantResponse;
 import com.laptopexpress.product_service.dto.response.ProductResponse;
+import com.laptopexpress.product_service.dto.response.ProductResponse.Brand;
 import com.laptopexpress.product_service.exception.IdInvalidException;
 import com.laptopexpress.product_service.service.ProductService;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -90,6 +94,20 @@ public class ProductController {
         .build();
   }
 
+  @GetMapping("/brand/{id}")
+  ApiResponse<PageResponse<ProductResponse>> getAllProductsByBrand(
+      @PathVariable String id,
+      @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+      @RequestParam(value = "size", required = false, defaultValue = "10") int size
+  ) {
+    return ApiResponse.<PageResponse<ProductResponse>>builder()
+        .code(HttpStatus.OK.value())
+        .error(null)
+        .message("Get all products successfully!")
+        .data(productService.fetchAllProductsByBrandId(page, size, id))
+        .build();
+  }
+
   @DeleteMapping("/delete/{id}")
   ApiResponse<Void> deleteProduct(@PathVariable String id) throws IdInvalidException {
     productService.deleteProduct(id);
@@ -101,4 +119,102 @@ public class ProductController {
         .build();
   }
 
+  @PostMapping("/filter-variant")
+  public ApiResponse<FilterVariantResponse> filterVariant(@RequestBody FilterVariantRequest request)
+      throws IdInvalidException {
+    FilterVariantResponse variant = productService.filterVariant(request);
+    return ApiResponse.<FilterVariantResponse>builder()
+        .code(HttpStatus.OK.value())
+        .error(null)
+        .message("Filter variant successfully!")
+        .data(variant)
+        .build();
+  }
+
+  @GetMapping("/get-by-price-desc")
+  ApiResponse<PageResponse<ProductResponse>> getAllProductsByPriceDesc(
+      @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+      @RequestParam(value = "size", required = false, defaultValue = "10") int size
+  ) {
+    return ApiResponse.<PageResponse<ProductResponse>>builder()
+        .code(HttpStatus.OK.value())
+        .error(null)
+        .message("Get all products successfully!")
+        .data(productService.fetchAllProductsByHigherPrice(page, size))
+        .build();
+  }
+
+  @GetMapping("/get-by-price-asc")
+  ApiResponse<PageResponse<ProductResponse>> getAllProductsByPriceAsc(
+      @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+      @RequestParam(value = "size", required = false, defaultValue = "10") int size
+  ) {
+    return ApiResponse.<PageResponse<ProductResponse>>builder()
+        .code(HttpStatus.OK.value())
+        .error(null)
+        .message("Get all products successfully!")
+        .data(productService.fetchAllProductsByLowerPrice(page, size))
+        .build();
+  }
+
+  @GetMapping("/get-by-salePrice")
+  ApiResponse<PageResponse<ProductResponse>> getAllProductsBySalePrice(
+      @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+      @RequestParam(value = "size", required = false, defaultValue = "10") int size
+  ) {
+    return ApiResponse.<PageResponse<ProductResponse>>builder()
+        .code(HttpStatus.OK.value())
+        .error(null)
+        .message("Get all products successfully!")
+        .data(productService.fetchAllProductsBySalePrice(page, size))
+        .build();
+  }
+
+  @GetMapping("/get-by-name")
+  ApiResponse<PageResponse<ProductResponse>> getAllProductsByNameSort(
+      @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+      @RequestParam(value = "size", required = false, defaultValue = "10") int size
+  ) {
+    return ApiResponse.<PageResponse<ProductResponse>>builder()
+        .code(HttpStatus.OK.value())
+        .error(null)
+        .message("Get all products successfully!")
+        .data(productService.fetchAllProductsByNameAscending(page, size))
+        .build();
+  }
+
+  @GetMapping("/get-by-newest")
+  ApiResponse<PageResponse<ProductResponse>> getAllProductsByNewest(
+      @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+      @RequestParam(value = "size", required = false, defaultValue = "10") int size
+  ) {
+    return ApiResponse.<PageResponse<ProductResponse>>builder()
+        .code(HttpStatus.OK.value())
+        .error(null)
+        .message("Get all products successfully!")
+        .data(productService.fetchAllProductsByNewest(page, size))
+        .build();
+  }
+
+  @GetMapping("/brands-in-category/{categoryId}")
+  ApiResponse<List<ProductResponse.Brand>> getBrandsByCategory(
+      @PathVariable String categoryId
+  ) {
+    return ApiResponse.<List<ProductResponse.Brand>>builder()
+        .code(HttpStatus.OK.value())
+        .error(null)
+        .message("Get brands by category successfully!")
+        .data(productService.getBrandsByCategoryId(categoryId))
+        .build();
+  }
+
+  @PostMapping("/fetch-by-ids")
+  ApiResponse<List<ProductResponse>> fetchProductsByIds(@RequestBody List<String> ids) {
+    return ApiResponse.<List<ProductResponse>>builder()
+        .code(HttpStatus.OK.value())
+        .error(null)
+        .message("Get products by ids successfully!")
+        .data(productService.fetchProductsByIds(ids))
+        .build();
+  }
 }

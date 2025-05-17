@@ -26,8 +26,10 @@ public class BrandEvent {
       product.setBrand(Brand.builder()
           .id(event.getId())
           .name(event.getName())
+          .isFeature(event.getIsFeature())
           .description(event.getDescription())
           .image(event.getImage())
+
           .build());
 
       productRepository.save(product);

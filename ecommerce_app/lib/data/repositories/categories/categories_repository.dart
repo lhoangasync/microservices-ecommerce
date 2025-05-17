@@ -39,4 +39,28 @@ class CategoriesRepository extends GetxController {
       rethrow;
     }
   }
+
+  // Get Sub Categories
+  Future<List<CategoryModel>> getSubCategories(String categoryId) async {
+    try {
+      final response = await THttpHelper.get(
+        'category/categories/get-sub-categories/$categoryId',
+      );
+
+      print("----subcategories: $response");
+
+      if (response['code'] == 200) {
+        final subCategories = response['data']['data'] as List<dynamic>;
+        return subCategories
+            .map((item) => CategoryModel.fromJson(item))
+            .toList();
+      } else {
+        // Xử lý trường hợp response không thành công
+        throw Exception(response['message'] ?? 'Failed to fetch subcategories');
+      }
+    } catch (e) {
+      print('Error in getAllCategories: $e');
+      rethrow;
+    }
+  }
 }

@@ -20,6 +20,7 @@ public class BrandResponse {
   String name;
   String description;
   String image;
+  Boolean isFeature;
 
   String createdBy;
   String updatedBy;

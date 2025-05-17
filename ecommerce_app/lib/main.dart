@@ -18,7 +18,6 @@ Future<void> main() async {
 
   // Initialize
   Get.put(AuthenticationRepository());
-  // Todo: Initialize Authentication
 
   runApp(const App());
 }

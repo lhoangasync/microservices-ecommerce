@@ -28,6 +28,18 @@ public class PermissionInterceptorConfiguration implements WebMvcConfigurer {
         "/auth/**",
         "/products/get-by-id/**",
         "/products/get-all",
+        "/products/get-by-price-desc",
+        "/products/get-by-price-asc",
+        "/products/get-by-name",
+        "/products/get-by-newest",
+        "/products/get-by-salePrice",
+        "/products/filter-variant",
+        "/products/create",
+        "/products/update",
+        "/products/brand/**",
+        "/products/category/**",
+        "/products/brands-in-category/**",
+        "/products/fetch-by-ids",
     };
 
     registry.addInterceptor(getPermissionInterceptor())

@@ -1,9 +1,12 @@
 package com.laptopexpress.category_service.entity;
 
 import java.time.Instant;
+import java.util.List;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,6 +17,8 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 @Builder
 @Document(value = "categories")
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@NoArgsConstructor
 public class Category {
 
   @MongoId
@@ -21,6 +26,12 @@ public class Category {
   String name;
   String description;
   String image;
+
+  String parentId;
+
+  Boolean isParent;
+
+  int level;
 
   String createdBy;
   String updatedBy;
@@ -34,6 +45,15 @@ public class Category {
     } else {
       this.updatedBy = currentUser;
       this.updatedAt = Instant.now();
+    }
+
+    if (this.parentId == null) {
+      this.isParent = true;
+      this.level = 0;
+    } else {
+      this.isParent = false;
+
+      this.level = 1;
     }
   }
 }

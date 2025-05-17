@@ -7,6 +7,7 @@ import com.laptopexpress.category_service.dto.request.CategoryUpdateRequest;
 import com.laptopexpress.category_service.dto.response.CategoryResponse;
 import com.laptopexpress.category_service.exception.IdInvalidException;
 import com.laptopexpress.category_service.service.CategoryService;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -83,6 +84,17 @@ public class CategoryController {
         .error(null)
         .message("Delete category successfully!")
         .data(null)
+        .build();
+  }
+
+  @GetMapping("/get-sub-categories/{categoryId}")
+  ApiResponse<List<CategoryResponse>> getSubCategories(
+      @PathVariable String categoryId) throws IdInvalidException {
+    return ApiResponse.<List<CategoryResponse>>builder()
+        .code(HttpStatus.OK.value())
+        .error(null)
+        .message("Get subcategories successfully!")
+        .data(categoryService.getSubCategories(categoryId))
         .build();
   }
 

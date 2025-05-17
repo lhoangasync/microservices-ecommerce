@@ -3,6 +3,8 @@ class CategoryModel {
   String name;
   String description;
   String image;
+  String parentId;
+  bool? isParent;
   String createdBy;
   String updatedBy;
   String createdAt;
@@ -13,18 +15,22 @@ class CategoryModel {
     required this.name,
     required this.description,
     required this.image,
+    required this.parentId,
+    this.isParent,
     required this.createdBy,
     required this.updatedBy,
     required this.createdAt,
     required this.updatedAt,
   });
 
-  // Constructor rỗng (empty object)
+  // Constructor emtyp (empty object)
   static CategoryModel empty() => CategoryModel(
     id: '',
     name: '',
     description: '',
     image: '',
+    parentId: '',
+    isParent: false,
     createdBy: '',
     updatedBy: '',
     createdAt: '',
@@ -38,6 +44,8 @@ class CategoryModel {
       name: json['name'] ?? '',
       description: json['description'] ?? '',
       image: json['image'] ?? '',
+      parentId: json['parentId'] ?? '',
+      isParent: json['isParent'] ?? false,
       createdBy: json['createdBy'] ?? '',
       updatedBy: json['updatedBy'] ?? '',
       createdAt: json['createdAt'] ?? '',
@@ -52,6 +60,8 @@ class CategoryModel {
       'name': name,
       'description': description,
       'image': image,
+      'parentId': parentId,
+      'isParent': isParent,
       'createdBy': createdBy,
       'updatedBy': updatedBy,
       'createdAt': createdAt,

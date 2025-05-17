@@ -19,6 +19,9 @@ public class CategoryResponse {
   String name;
   String description;
   String image;
+  String parentId;
+  Boolean isParent;
+  int level;
 
   String createdBy;
   String updatedBy;

@@ -16,7 +16,7 @@ class THomeCategories extends StatelessWidget {
     return Obx(() {
       if (categoryController.isLoading.value) return const TCategoryShimmer();
 
-      if (categoryController.allCategories.isEmpty) {
+      if (categoryController.featuredCategories.isEmpty) {
         return Center(
           child: Text(
             'No Data Found!',
@@ -30,15 +30,16 @@ class THomeCategories extends StatelessWidget {
         height: 80,
         child: ListView.builder(
           shrinkWrap: true,
-          itemCount: categoryController.allCategories.length,
+          itemCount: categoryController.featuredCategories.length,
           scrollDirection: Axis.horizontal,
           itemBuilder: (_, index) {
-            final category = categoryController.allCategories[index];
+            final category = categoryController.featuredCategories[index];
             return TVerticalImageText(
               isNetworkImage: true,
               image: category.image,
               title: category.name,
-              onTap: () => Get.to(() => const SubCategoriesScreen()),
+              onTap:
+                  () => Get.to(() => SubCategoriesScreen(category: category)),
             );
           },
         ),

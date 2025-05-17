@@ -1,5 +1,7 @@
 import 'package:ecommerce_app/common/widgets/layouts/grid_layout.dart';
 import 'package:ecommerce_app/common/widgets/products/product_cards/product_card_vertical.dart';
+import 'package:ecommerce_app/common/widgets/shimmer/vertical_product_shimmer.dart';
+import 'package:ecommerce_app/features/shop/controllers/product/product_controller.dart';
 import 'package:ecommerce_app/features/shop/screens/all_products/all_products.dart';
 import 'package:ecommerce_app/features/shop/screens/home/widgets/home_appbar.dart';
 import 'package:ecommerce_app/features/shop/screens/home/widgets/home_categories.dart';
@@ -18,6 +20,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(ProductController());
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -29,34 +33,28 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: TSizes.spaceBtwSections),
                   const TSearchContainer(text: 'Search in store'),
                   const SizedBox(height: TSizes.spaceBtwSections),
-
                   Padding(
                     padding: const EdgeInsets.only(left: TSizes.defaultSpace),
                     child: Column(
                       children: [
-                        // Heading
                         TSectionHeading(
                           title: "Popular Categories",
                           showActionButton: false,
                           textColor: Colors.white,
                         ),
                         const SizedBox(height: TSizes.spaceBtwItems),
-
-                        // Category
                         THomeCategories(),
                       ],
                     ),
                   ),
-                  SizedBox(height: TSizes.spaceBtwSections),
+                  const SizedBox(height: TSizes.spaceBtwSections),
                 ],
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.all(TSizes.defaultSpace),
               child: Column(
                 children: [
-                  // Promo Slider
                   TPromoSlider(
                     banners: [
                       TImages.promoBanner1,
@@ -65,18 +63,52 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
 
-                  // Heading
+                  const SizedBox(height: TSizes.spaceBtwInputFields),
+
                   TSectionHeading(
                     title: 'Popular Products',
-                    onPressed: () => Get.to(() => AllProducts()),
+                    onPressed:
+                        () => Get.to(
+                          () => AllProducts(
+                            title: 'Popular Products',
+                            futureMethod: controller.listAllProducts(
+                              controller.totalElements.value,
+                            ),
+                          ),
+                        ),
                   ),
                   const SizedBox(height: TSizes.spaceBtwSections),
+                  Obx(() {
+                    if (controller.isLoading.value) {
+                      return const TVerticalProductShimmer();
+                    }
 
-                  // Popular products
-                  TGridLayout(
-                    itemCount: 6,
-                    itemBuilder: (_, index) => const TProductCardVertical(),
-                  ),
+                    if (controller.allProducts.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'No Data Found!',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      );
+                    }
+
+                    return Column(
+                      children: [
+                        TGridLayout(
+                          itemCount: controller.allProducts.length,
+                          itemBuilder:
+                              (_, index) => TProductCardVertical(
+                                product: controller.allProducts[index],
+                              ),
+                        ),
+                        if (controller.isLoadMoreLoading.value)
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 16),
+                            child: CircularProgressIndicator(),
+                          ),
+                      ],
+                    );
+                  }),
                 ],
               ),
             ),

@@ -29,6 +29,9 @@ public class PermissionInterceptorConfiguration implements WebMvcConfigurer {
         "/categories/get-all",
         "/categories/get-by-id/**",
         "/categories/create",
+        "/categories/delete/**",
+        "/categories/update",
+        "/categories/get-sub-categories/**",
     };
 
     registry.addInterceptor(getPermissionInterceptor())

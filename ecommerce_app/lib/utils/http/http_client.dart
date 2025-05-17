@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 class THttpHelper {
   static const String _baseUrl = 'http://192.168.0.117:8888/api/v1';
   static final _localStorage = GetStorage();
+  // static const String _baseUrl = 'http://10.0.131.144:8888/api/v1';
 
   /// Build headers, optionally including Authorization token
   static Map<String, String> _buildHeaders(bool useToken) {
@@ -83,9 +84,9 @@ class THttpHelper {
   }
 
   static Map<String, dynamic> _handleResponse(http.Response response) {
-    if (kDebugMode) {
-      print("Raw body: ${response.body}");
-    }
+    // if (kDebugMode) {
+    //   print("Raw body: ${response.body}");
+    // }
 
     Map<String, dynamic> responseData;
     try {

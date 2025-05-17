@@ -37,6 +37,7 @@ public class SecurityConfiguration {
       "/auth/introspect",
       "/categories/get-all",
       "/categories/get-by-id/**",
+      "/categories/get-sub-categories/**",
   };
 
 

@@ -18,4 +18,5 @@ public class BrandUpdatedEvent {
   String name;
   String description;
   String image;
+  Boolean isFeature;
 }

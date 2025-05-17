@@ -4,7 +4,6 @@ package com.laptopexpress.product_service.listener;
 import com.laptopexpress.event.dto.CategoryDeletedEvent;
 import com.laptopexpress.event.dto.CategoryUpdatedEvent;
 import com.laptopexpress.product_service.dto.response.ProductResponse.Category;
-import com.laptopexpress.product_service.mapper.ProductMapper;
 import com.laptopexpress.product_service.repository.ProductRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +30,7 @@ public class CategoryEvent {
           .name(categoryUpdatedEvent.getName())
           .description(categoryUpdatedEvent.getDescription())
           .image(categoryUpdatedEvent.getImage())
+          .parentId(categoryUpdatedEvent.getParentId())
           .build());
 
       productRepository.save(product);

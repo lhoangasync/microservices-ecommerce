@@ -21,6 +21,7 @@ public class Brand {
   String id;
   String name;
   String description;
+  Boolean isFeature;
   String image;
 
   String createdBy;

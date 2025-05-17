@@ -19,4 +19,5 @@ public class CategoryUpdatedEvent {
   String name;
   String description;
   String image;
+  String parentId;
 }

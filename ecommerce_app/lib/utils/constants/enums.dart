@@ -13,3 +13,12 @@ enum PaymentMethods {
   razorPay,
   paytm,
 }
+
+enum ProductFetchMode {
+  all,
+  name,
+  byDescendingPrice,
+  byAscendingPrice,
+  byNewest,
+  sale,
+}

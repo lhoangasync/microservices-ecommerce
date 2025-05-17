@@ -37,6 +37,15 @@ public class SecurityConfiguration {
       "/auth/introspect",
       "/products/get-all",
       "/products/get-by-id/**",
+      "/products/get-by-price-desc",
+      "/products/get-by-price-asc",
+      "/products/get-by-name",
+      "/products/get-by-newest",
+      "/products/get-by-salePrice",
+      "/products/brand/**",
+      "/products/category/**",
+      "/products/brands-in-category/**",
+      "/products/fetch-by-ids",
   };
 
 

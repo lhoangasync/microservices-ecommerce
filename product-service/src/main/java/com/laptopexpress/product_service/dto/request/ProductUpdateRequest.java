@@ -23,11 +23,28 @@ public class ProductUpdateRequest {
 
   String name;
   String description;
+  Integer quantity;
   List<String> image;
   String categoryId;
   String brandId;
   String status;
+  Double price;
+  Double salePrice;
+  String thumbnail;
+
+  List<ProductAttributeRequest> attributes;
   List<VariantRequest> variants;
+
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Builder
+  @FieldDefaults(level = AccessLevel.PRIVATE)
+  public static class ProductAttributeRequest {
+
+    String name;
+    List<String> values;
+  }
 
   @Data
   @NoArgsConstructor
@@ -38,8 +55,24 @@ public class ProductUpdateRequest {
 
     String variantId;
     String variantName;
+    String image;
+    String description;
     Double price;
+    Double salePrice;
     Integer quantity;
     StockStatus stockStatus;
+
+    List<AttributeValueRequest> attributeVariant;
+  }
+
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Builder
+  @FieldDefaults(level = AccessLevel.PRIVATE)
+  public static class AttributeValueRequest {
+
+    String name;
+    String value;
   }
 }

@@ -4,6 +4,7 @@ import com.laptopexpress.identity_service.enums.GenderEnum;
 import com.laptopexpress.identity_service.service.AuthenticationService;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import java.util.List;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -26,7 +27,7 @@ public class User {
   String firstName;
 
   String lastName;
-  
+
   String username;
 
   String email;
@@ -60,6 +61,9 @@ public class User {
   @ManyToOne
   @JoinColumn(name = "role_id")
   Role role;
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  List<Address> addresses;
 
   @PrePersist
   public void handleBeforeCreate() {

@@ -25,16 +25,32 @@ public class Product {
   String userId;
   String name;
   String description;
+  Integer quantity;
   List<String> image;
+  String status;
+  Double price;
+  Double salePrice;
   Category category;
   Brand brand;
-  String status;
+  String thumbnail;
+
+  List<ProductAttribute> attributes;
   List<Variant> variants;
 
   String createdBy;
   String updatedBy;
   Instant createdAt;
   Instant updatedAt;
+
+  @Getter
+  @Setter
+  @Builder
+  @FieldDefaults(level = AccessLevel.PRIVATE)
+  public static class ProductAttribute {
+
+    String name;
+    List<String> values;
+  }
 
 
   @Getter
@@ -44,10 +60,24 @@ public class Product {
   public static class Variant {
 
     String variantId;
-    String variantName;
+    String image;
     Double price;
+    Double salePrice;
+    String variantName;
+    String description;
     Integer quantity;
     StockStatus stockStatus;
+    List<AttributeValue> attributeVariant;
+  }
+
+  @Getter
+  @Setter
+  @Builder
+  @FieldDefaults(level = AccessLevel.PRIVATE)
+  public static class AttributeValue {
+
+    String name;
+    String value;
   }
 
 

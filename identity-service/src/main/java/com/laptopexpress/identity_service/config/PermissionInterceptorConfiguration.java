@@ -27,7 +27,8 @@ public class PermissionInterceptorConfiguration implements WebMvcConfigurer {
     String[] PUBLIC_INTERCEPTORS = {
         "/",
         "/auth/**",
-        "/users/**"
+        "/users/**",
+        "/addresses/**",
     };
     registry.addInterceptor(getPermissionInterceptor())
         .excludePathPatterns(PUBLIC_INTERCEPTORS);

@@ -37,6 +37,7 @@ public class BrandService {
         .name(brandRequest.getName())
         .description(brandRequest.getDescription())
         .image(brandRequest.getImage())
+        .isFeature(brandRequest.getIsFeature())
         .build();
     Brand savedBrand = brandRepository.save(brand);
     return brandMapper.toBrandResponse(savedBrand);
@@ -57,12 +58,16 @@ public class BrandService {
     if (request.getImage() != null) {
       brand.setImage(request.getImage());
     }
+    if (request.getIsFeature() != null) {
+      brand.setIsFeature(request.getIsFeature());
+    }
     Brand savedBrand = brandRepository.save(brand);
     BrandUpdatedEvent event = BrandUpdatedEvent.builder()
         .id(savedBrand.getId())
         .name(savedBrand.getName())
         .description(savedBrand.getDescription())
         .image(savedBrand.getImage())
+        .isFeature(savedBrand.getIsFeature())
         .build();
 
     kafkaTemplate.send("brand-update-topic", event);

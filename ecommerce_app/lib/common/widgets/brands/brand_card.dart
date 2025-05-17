@@ -1,17 +1,23 @@
 import 'package:ecommerce_app/common/widgets/custom_shapes/container/rounded_container.dart';
+import 'package:ecommerce_app/features/shop/models/brand_model.dart';
 import 'package:flutter/material.dart';
 
 import '../../../utils/constants/colors.dart';
 import '../../../utils/constants/enums.dart';
-import '../../../utils/constants/image_strings.dart';
 import '../../../utils/constants/sizes.dart';
 import '../../../utils/helpers/helper_functions.dart';
 import '../images/t_circular_image.dart';
 import '../texts/t_brand_title_text_with_verified_icon.dart';
 
 class TBrandCard extends StatelessWidget {
-  const TBrandCard({super.key, this.onTap, required this.showBorder});
+  const TBrandCard({
+    super.key,
+    this.onTap,
+    required this.showBorder,
+    required this.brand,
+  });
 
+  final BrandModel brand;
   final bool showBorder;
   final void Function()? onTap;
 
@@ -28,8 +34,8 @@ class TBrandCard extends StatelessWidget {
             /// --Icon
             Flexible(
               child: TCircularImage(
-                isNetworkImage: false,
-                image: TImages.clothIcon,
+                isNetworkImage: true,
+                image: brand.image,
                 backgroundColor: Colors.transparent,
                 overlayColor:
                     THelperFunctions.isDarkMode(context)
@@ -46,7 +52,7 @@ class TBrandCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TBrandTitleWithVerifiedIcon(
-                    title: 'Nike',
+                    title: brand.name,
                     brandTextSizes: TextSizes.large,
                   ),
                   Text(

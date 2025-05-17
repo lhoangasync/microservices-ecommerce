@@ -11,6 +11,8 @@ import com.laptopexpress.category_service.repository.CategoryRepository;
 
 import com.laptopexpress.event.dto.CategoryDeletedEvent;
 import com.laptopexpress.event.dto.CategoryUpdatedEvent;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -37,6 +39,7 @@ public class CategoryService {
         .name(categoryRequest.getName())
         .description(categoryRequest.getDescription())
         .image(categoryRequest.getImage())
+        .parentId(categoryRequest.getParentId())
         .build();
 
     Category savedCategory = categoryRepository.save(category);
@@ -58,12 +61,17 @@ public class CategoryService {
       category.setImage(request.getImage());
     }
 
+    if (request.getParentId() != null) {
+      category.setParentId(request.getParentId());
+    }
+
     Category savedCategory = categoryRepository.save(category);
     CategoryUpdatedEvent event = CategoryUpdatedEvent.builder()
         .id(savedCategory.getId())
         .name(savedCategory.getName())
         .description(savedCategory.getDescription())
         .image(savedCategory.getImage())
+        .parentId(savedCategory.getParentId())
         .build();
 
     kafkaTemplate.send("category-update-topic", event);
@@ -98,6 +106,10 @@ public class CategoryService {
   public void deleteCategory(String id) throws IdInvalidException {
     Category category = categoryRepository.findById(id)
         .orElseThrow(() -> new IdInvalidException("Category with this ID = " + id + " not found"));
+
+    if (category.getIsParent()) {
+      categoryRepository.deleteByParentId(id);
+    }
     categoryRepository.delete(category);
 
     CategoryDeletedEvent event = CategoryDeletedEvent.builder()
@@ -105,6 +117,17 @@ public class CategoryService {
         .build();
 
     kafkaTemplate.send("category-delete-topic", event);
+  }
+
+  public List<CategoryResponse> getSubCategories(String categoryId) throws IdInvalidException {
+    if (!categoryRepository.existsById(categoryId)) {
+      throw new IdInvalidException("Category with ID = " + categoryId + " not found");
+    }
+
+    List<Category> subCategories = categoryRepository.findByParentId(categoryId);
+    return subCategories.stream()
+        .map(categoryMapper::toCategoryResponse)
+        .collect(Collectors.toList());
   }
 
 }

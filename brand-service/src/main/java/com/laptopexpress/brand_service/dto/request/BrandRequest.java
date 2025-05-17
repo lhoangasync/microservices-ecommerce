@@ -18,5 +18,6 @@ public class BrandRequest {
   String name;
   String description;
   String image;
+  Boolean isFeature;
 
 }

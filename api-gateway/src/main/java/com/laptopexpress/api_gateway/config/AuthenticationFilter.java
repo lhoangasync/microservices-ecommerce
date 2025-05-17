@@ -40,13 +40,25 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
   @NonFinal
   private String[] publicEndpoints = {
-      "/identity/auth/.*", "/search/.*", "/identity/users/.*",
+      "/identity/auth/.*", "/search/.*", "/identity/users/.*", "/identity/addresses/get-all",
+
       "/brand/brands/get-all",
       "/brand/brands/get-by-id/.*",
       "/product/products/get-all",
       "/product/products/get-by-id/.*",
+      "/product/products/get-by-price-desc",
+      "/product/products/get-by-price-asc",
+      "/product/products/get-by-name",
+      "/product/products/get-by-newest",
+      "/product/products/get-by-salePrice",
+      "/product/products/update",
+      "/product/products/brand/.*",
+      "/product/products/category/.*",
+      "/product/products/brands-in-category/.*",
+      "/product/products/fetch-by-ids",
       "/category/categories/get-all",
       "/category/categories/get-by-id/.*",
+      "/category/categories/get-sub-categories/.*",
       "/file/media/download/.*",
   };
 
