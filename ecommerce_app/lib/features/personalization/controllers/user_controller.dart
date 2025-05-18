@@ -1,4 +1,5 @@
 import 'package:ecommerce_app/data/repositories/user/user_repostitory.dart';
+import 'package:ecommerce_app/features/admin/admin_page.dart';
 import 'package:ecommerce_app/features/personalization/models/user_model.dart';
 import 'package:ecommerce_app/utils/popups/full_screen_loader.dart';
 import 'package:ecommerce_app/utils/popups/loader.dart';
@@ -25,6 +26,10 @@ class UserController extends GetxController {
       profileLoading.value = true;
       final user = await userRepository.getMyAccount();
       this.user(user);
+
+      if (user.role.name == "SUPER_ADMIN") {
+        Get.offAll(() => AdminPage());
+      }
     } catch (e) {
       user(UserModel.empty());
     } finally {

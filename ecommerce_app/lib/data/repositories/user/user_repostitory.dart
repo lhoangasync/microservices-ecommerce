@@ -16,7 +16,7 @@ class UserRepository extends GetxController {
 
       if (response['code'] == 200) {
         final userData = response['data']['data']['user'];
-        // print("--------- Check User data: $userData");
+        print("--------- Check User data: $userData");
         return UserModel.fromJson(userData);
       } else {
         throw Exception(response['message']);
