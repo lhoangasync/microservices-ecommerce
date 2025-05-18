@@ -7,6 +7,7 @@ import 'package:ecommerce_app/features/shop/controllers/product/variation_contro
 import 'package:ecommerce_app/features/shop/models/product_model.dart';
 import 'package:ecommerce_app/utils/constants/colors.dart';
 import 'package:ecommerce_app/utils/constants/sizes.dart';
+import 'package:ecommerce_app/utils/formatters/formatter.dart';
 import 'package:ecommerce_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,6 +21,7 @@ class TProductAttributes extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(VariationController());
     final dark = THelperFunctions.isDarkMode(context);
+    controller.setCurrentProduct(product);
 
     return Obx(
       () => Column(
@@ -65,7 +67,12 @@ class TProductAttributes extends StatelessWidget {
                                           .salePrice >
                                       0)
                                     Text(
-                                      '${controller.selectedVariation.value.price} vnđ',
+                                      TFormatter.formatVND(
+                                        controller
+                                            .selectedVariation
+                                            .value
+                                            .price,
+                                      ),
                                       style: Theme.of(
                                         context,
                                       ).textTheme.titleSmall!.apply(

@@ -1,6 +1,8 @@
+import 'package:ecommerce_app/features/shop/controllers/product/cart_controller.dart';
 import 'package:ecommerce_app/features/shop/controllers/product/image_controller.dart';
 import 'package:ecommerce_app/features/shop/models/product_model.dart';
 import 'package:ecommerce_app/features/shop/models/product_variation_model.dart';
+import 'package:ecommerce_app/utils/formatters/formatter.dart';
 import 'package:get/get.dart';
 
 class VariationController extends GetxController {
@@ -12,12 +14,28 @@ class VariationController extends GetxController {
   Rx<ProductVariationModel> selectedVariation =
       ProductVariationModel.empty().obs;
 
+  RxString currentProductId = ''.obs;
+
+  void setCurrentProduct(ProductModel product) {
+    // Nếu sản phẩm thay đổi, reset trạng thái
+    if (currentProductId.value != product.id) {
+      resetSelectedAttributes();
+      currentProductId.value = product.id;
+    }
+  }
+
   // selected attributes, and variation
   void onAttributeSelected(
     ProductModel product,
     attributeName,
     attributeValue,
   ) {
+    // Kiểm tra xem sản phẩm hiện tại có thay đổi không
+    if (currentProductId.value != product.id) {
+      resetSelectedAttributes();
+      currentProductId.value = product.id;
+    }
+
     final selectedAttributes = Map<String, dynamic>.from(
       this.selectedAttributes,
     );
@@ -31,6 +49,14 @@ class VariationController extends GetxController {
 
       return _isSameAttributeValues(variationAttributes, selectedAttributes);
     }, orElse: () => ProductVariationModel.empty());
+
+    // show selected variation quantity already in the cart
+    if (selectedVariation.variantId.isNotEmpty) {
+      final cartController = CartController.instance;
+      cartController.productQuantityInCart.value = cartController
+          .getVariationQuantityInCart(product.id, selectedVariation.variantId);
+    }
+
     if (selectedVariation.image.isNotEmpty) {
       ImageController.instance.selectedProductImage.value =
           selectedVariation.image;
@@ -84,10 +110,11 @@ class VariationController extends GetxController {
   }
 
   String getVariationPrice() {
-    return (selectedVariation.value.salePrice > 0
+    double price =
+        selectedVariation.value.salePrice > 0
             ? selectedVariation.value.salePrice
-            : selectedVariation.value.price)
-        .toString();
+            : selectedVariation.value.price;
+    return TFormatter.formatVND(price);
   }
 
   // check product variation stock status

@@ -17,6 +17,8 @@ class BrandsPage extends StatefulWidget {
 
 class _BrandsPageState extends State<BrandsPage> {
   final localStorage = GetStorage();
+  final url = THttpHelper.baseUrl;
+
   final List<dynamic> _brands = [];
   bool _isLoading = true;
   int _currentPage = 1;
@@ -100,8 +102,6 @@ class _BrandsPageState extends State<BrandsPage> {
         });
       }
 
-      _isLoading = false;
-
       print(
         'Kết thúc tải thương hiệu: _isLoading=$_isLoading, _hasMoreData=$_hasMoreData, số lượng brands=${_brands.length}',
       );
@@ -142,10 +142,16 @@ class _BrandsPageState extends State<BrandsPage> {
         'isFeature': isFeature, // Thêm trường isFeature
       }, useToken: true);
 
-      if (response['code'] == 201) {
+      if (response['code'] == 200) {
         _showSnackBar('Thêm thương hiệu thành công');
+        setState(() {
+          _isLoading = false;
+        });
         _refreshBrands();
       } else {
+        setState(() {
+          _isLoading = false;
+        });
         _showSnackBar('Không thể tạo thương hiệu: ${response['message']}');
       }
     } catch (e) {
@@ -183,8 +189,16 @@ class _BrandsPageState extends State<BrandsPage> {
 
       if (response['code'] == 200) {
         _showSnackBar('Cập nhật thương hiệu thành công');
+        setState(() {
+          _isLoading = false;
+        });
+
         _refreshBrands();
       } else {
+        setState(() {
+          _isLoading = false;
+        });
+
         _showSnackBar('Không thể cập nhật thương hiệu: ${response['message']}');
       }
     } catch (e) {
@@ -202,8 +216,16 @@ class _BrandsPageState extends State<BrandsPage> {
 
       if (response['code'] == 200) {
         _showSnackBar('Xóa thương hiệu thành công');
+        setState(() {
+          _isLoading = false;
+        });
+
         _refreshBrands();
       } else {
+        setState(() {
+          _isLoading = false;
+        });
+
         _showSnackBar('Không thể xóa thương hiệu: ${response['message']}');
       }
       _isLoading = false;
@@ -239,7 +261,7 @@ class _BrandsPageState extends State<BrandsPage> {
   // Upload file cho web
   Future<String> _uploadFileForWeb(Uint8List bytes, String fileName) async {
     try {
-      const baseUrl = 'http://192.168.0.117:8888/api/v1';
+      final baseUrl = url;
 
       final formData = http.MultipartRequest(
         'POST',

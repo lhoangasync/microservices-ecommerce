@@ -1,4 +1,5 @@
 import 'package:ecommerce_app/common/widgets/custom_shapes/container/rounded_container.dart';
+import 'package:ecommerce_app/features/shop/controllers/brand_controller.dart';
 import 'package:ecommerce_app/features/shop/models/brand_model.dart';
 import 'package:flutter/material.dart';
 
@@ -23,6 +24,8 @@ class TBrandCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = BrandController.instance;
+
     return GestureDetector(
       onTap: onTap,
       child: TRoundedContainer(
@@ -55,10 +58,16 @@ class TBrandCard extends StatelessWidget {
                     title: brand.name,
                     brandTextSizes: TextSizes.large,
                   ),
-                  Text(
-                    '256 products',
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.labelMedium,
+                  FutureBuilder(
+                    future: controller.getBrandProducts(brandId: brand.id),
+                    builder: (context, snapshot) {
+                      final productCount = snapshot.data?.length ?? 0;
+                      return Text(
+                        '$productCount Products',
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelMedium,
+                      );
+                    },
                   ),
                 ],
               ),

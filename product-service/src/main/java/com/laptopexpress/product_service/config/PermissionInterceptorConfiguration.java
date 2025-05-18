@@ -36,6 +36,7 @@ public class PermissionInterceptorConfiguration implements WebMvcConfigurer {
         "/products/filter-variant",
         "/products/create",
         "/products/update",
+        "/products/delete/**",
         "/products/brand/**",
         "/products/category/**",
         "/products/brands-in-category/**",

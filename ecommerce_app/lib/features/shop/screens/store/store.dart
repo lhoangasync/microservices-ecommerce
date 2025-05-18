@@ -35,9 +35,7 @@ class StoreScreen extends StatelessWidget {
             'Store',
             style: Theme.of(context).textTheme.headlineMedium,
           ),
-          actions: [
-            TCartCounterIcon(onPressed: () {}, iconColor: TColors.black),
-          ],
+          actions: [TCartCounterIcon(iconColor: TColors.black)],
         ),
         body: NestedScrollView(
           headerSliverBuilder: (_, innerBoxIsScrolled) {

@@ -59,6 +59,9 @@ class TImages {
   static const String pencilAnimation =
       "assets/images/animations/140429-pencil-drawing.json";
 
+  static const String cartAnimation =
+      "assets/images/animations/lady-adding-product-in-cart-animation.json";
+
   // -- OnBoarding Texts
   static const String onBoardingImage1 =
       "assets/images/on_boarding_images/sammy-line-searching.gif";

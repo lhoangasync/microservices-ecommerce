@@ -10,9 +10,20 @@ class TFormatter {
 
   static String formatCurrency(double amount) {
     return NumberFormat.currency(
-      locale: 'en_US',
-      symbol: '\$',
-    ).format(amount); // Customize the currency locale and symbol as needed
+      locale: 'vi_VN',
+      symbol: '₫',
+      decimalDigits: 0,
+    ).format(amount);
+  }
+
+  static String formatVND(double amount) {
+    // Sử dụng NumberFormat với locale vi_VN để định dạng
+    final formatted = NumberFormat('#,###', 'vi_VN').format(amount);
+
+    // Thay thế dấu chấm bằng dấu phẩy
+    final formattedWithComma = formatted.replaceAll('.', ',');
+
+    return '$formattedWithComma vnđ';
   }
 
   static String formatPhoneNumber(String phoneNumber) {

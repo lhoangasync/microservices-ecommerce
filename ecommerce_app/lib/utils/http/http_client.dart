@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 class THttpHelper {
   static const String _baseUrl = 'http://192.168.0.117:8888/api/v1';
+  static String get baseUrl => _baseUrl;
   static final _localStorage = GetStorage();
   // static const String _baseUrl = 'http://10.0.131.144:8888/api/v1';
 

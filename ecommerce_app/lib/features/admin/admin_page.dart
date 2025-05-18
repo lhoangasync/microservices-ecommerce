@@ -146,16 +146,16 @@ class _AdminPageState extends State<AdminPage> {
           const SizedBox(height: 10),
 
           // Menu items
-          _buildMenuItemWithSelection(Icons.dashboard, "Dashboard"),
-          _buildMenuItemWithSelection(Icons.image, "Media"),
-          _buildMenuItemWithSelection(Icons.view_carousel, "Banners"),
+          // _buildMenuItemWithSelection(Icons.dashboard, "Dashboard"),
+          // _buildMenuItemWithSelection(Icons.image, "Media"),
+          // _buildMenuItemWithSelection(Icons.view_carousel, "Banners"),
           _buildMenuItemWithSelection(Icons.inventory_2, "Products"),
           _buildMenuItemWithSelection(Icons.category, "Categories"),
           _buildMenuItemWithSelection(Icons.local_offer, "Brands"),
-          _buildMenuItemWithSelection(Icons.people, "Customers"),
-          _buildMenuItemWithSelection(Icons.shopping_cart, "Orders"),
-          _buildMenuItemWithSelection(Icons.card_giftcard, "Coupons"),
 
+          // _buildMenuItemWithSelection(Icons.people, "Customers"),
+          // _buildMenuItemWithSelection(Icons.shopping_cart, "Orders"),
+          // _buildMenuItemWithSelection(Icons.card_giftcard, "Coupons"),
           const SizedBox(height: 20),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
@@ -168,7 +168,7 @@ class _AdminPageState extends State<AdminPage> {
               ),
             ),
           ),
-          _buildMenuItemWithSelection(Icons.settings, "Settings"),
+          // _buildMenuItemWithSelection(Icons.settings, "Settings"),
           _buildLogoutMenuItem(Icons.logout, "Logout"),
         ],
       ),

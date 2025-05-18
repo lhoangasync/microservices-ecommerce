@@ -17,36 +17,65 @@ class ProductsPage extends StatefulWidget {
 
 class _ProductsPageState extends State<ProductsPage> {
   final localStorage = GetStorage();
+  final ScrollController _scrollController = ScrollController();
+
+  final url = THttpHelper.baseUrl;
+
   final List<dynamic> _products = [];
   late List<dynamic> _categories = [];
   late List<dynamic> _brands = [];
-  bool _isLoading = true;
   int _currentPage = 1;
   final int _pageSize = 10;
   bool _hasMoreData = true;
   final _searchController = TextEditingController();
   String _searchQuery = '';
-
+  // Biến trạng thái riêng cho từng loại
+  bool _isLoadingProducts = false; // Cho sản phẩm
+  bool _isLoadingCategories = false; // Cho danh mục
+  bool _isLoadingBrands = false;
+  bool get isAnyLoading =>
+      _isLoadingProducts ||
+      _isLoadingCategories ||
+      _isLoadingBrands; // Cho thương hiệu
   @override
   void initState() {
     super.initState();
+    _currentPage = 1;
+    _hasMoreData = true;
+    _scrollController.addListener(_scrollListener);
+
     _loadProducts();
     _loadCategories();
     _loadBrands();
   }
 
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      // Người dùng đã cuộn đến cuối
+      if (_hasMoreData && !_isLoadingProducts && _searchQuery.isEmpty) {
+        _loadProducts();
+      }
+    }
+  }
+
   @override
   void dispose() {
+    _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }
 
   // Load danh sách sản phẩm
   Future<void> _loadProducts() async {
-    if (!_hasMoreData || _isLoading) return;
-
+    if (!_hasMoreData || _isLoadingProducts) {
+      print(
+        '-> Bỏ qua vì _hasMoreData = $_hasMoreData hoặc _isLoadingProducts = $_isLoadingProducts',
+      );
+      return;
+    }
     setState(() {
-      _isLoading = true;
+      _isLoadingProducts = true;
     });
 
     try {
@@ -54,12 +83,13 @@ class _ProductsPageState extends State<ProductsPage> {
         'product/products/get-all?page=$_currentPage&size=$_pageSize',
         useToken: true,
       );
-
+      print('Nhận response API sản phẩm: ${response['code']}');
+      print('Full response sản phẩm: $response');
       if (response['code'] == 200) {
         final responseData = response['data'];
         if (responseData['data'] != null &&
-            responseData['data']['content'] != null) {
-          final List<dynamic> newProducts = responseData['data']['content'];
+            responseData['data']['data'] != null) {
+          final List<dynamic> newProducts = responseData['data']['data'];
 
           setState(() {
             if (newProducts.length < _pageSize) {
@@ -67,69 +97,159 @@ class _ProductsPageState extends State<ProductsPage> {
             }
             _products.addAll(newProducts);
             _currentPage++;
-            _isLoading = false;
+            _isLoadingProducts = false;
           });
         } else {
           setState(() {
-            _isLoading = false;
+            _isLoadingProducts = false;
             _hasMoreData = false;
           });
         }
       } else {
         setState(() {
-          _isLoading = false;
+          _isLoadingProducts = false;
         });
         _showSnackBar('Không thể tải sản phẩm: ${response['message']}');
       }
     } catch (e) {
       setState(() {
-        _isLoading = false;
+        _isLoadingProducts = false;
       });
       _showSnackBar('Lỗi: $e');
     }
   }
 
   // Load danh sách danh mục
+  // Load tất cả danh mục
   Future<void> _loadCategories() async {
+    print('Bắt đầu tải danh mục');
+
+    if (_isLoadingCategories) {
+      print('Đang tải danh mục rồi, bỏ qua');
+      return;
+    }
+
+    setState(() {
+      _isLoadingCategories = true;
+    });
+
     try {
+      // Loại bỏ phân trang bằng cách đặt size=1000 hoặc giá trị đủ lớn
+      // Hoặc sử dụng endpoint khác nếu có
       final response = await THttpHelper.get(
-        'category/categories/get-all?page=1&size=100',
+        'category/categories/get-all?size=1000',
         useToken: true,
       );
 
+      print('Nhận response API: ${response['code']}');
+
       if (response['code'] == 200) {
-        final responseData = response['data'];
-        if (responseData['data'] != null &&
-            responseData['data']['content'] != null) {
+        final outerData = response['data'];
+
+        if (outerData != null) {
+          List<dynamic> categories = [];
+
+          // Xử lý cho cả hai trường hợp: cấu trúc lồng nhau hoặc cấu trúc cũ
+          if (outerData['data'] != null) {
+            final innerData = outerData['data'];
+
+            if (innerData['data'] != null && innerData['data'] is List) {
+              categories = List<dynamic>.from(innerData['data']);
+            } else if (innerData['content'] != null &&
+                innerData['content'] is List) {
+              categories = List<dynamic>.from(innerData['content']);
+            } else if (innerData is List) {
+              categories = List<dynamic>.from(innerData);
+            }
+          } else if (outerData['content'] != null &&
+              outerData['content'] is List) {
+            categories = List<dynamic>.from(outerData['content']);
+          }
+
           setState(() {
-            _categories = responseData['data']['content'];
+            _categories = categories; // Gán trực tiếp, không addAll
+            _isLoadingCategories = false;
           });
+
+          print('Đã tải ${_categories.length} danh mục');
         }
+      } else {
+        setState(() {
+          _isLoadingCategories = false;
+        });
+        _showSnackBar('Không thể tải danh mục: ${response['message']}');
       }
     } catch (e) {
-      _showSnackBar('Không thể tải danh mục: $e');
+      setState(() {
+        _isLoadingCategories = false;
+      });
+      _showSnackBar('Lỗi: $e');
+      print('Lỗi ngoại lệ khi tải danh mục: $e');
     }
   }
 
   // Load danh sách thương hiệu
+  // Load tất cả thương hiệu
   Future<void> _loadBrands() async {
+    print('Bắt đầu tải thương hiệu');
+
+    if (_isLoadingBrands) {
+      print('Đang tải thương hiệu rồi, bỏ qua');
+      return;
+    }
+
+    setState(() {
+      _isLoadingBrands = true;
+    });
+
     try {
+      // Loại bỏ phân trang bằng cách đặt size=1000 hoặc giá trị đủ lớn
       final response = await THttpHelper.get(
-        'brand/brands/get-all?page=1&size=100',
+        'brand/brands/get-all?size=1000',
         useToken: true,
       );
 
-      if (response['code'] == 200) {
-        final responseData = response['data'];
-        if (responseData['data'] != null &&
-            responseData['data']['content'] != null) {
-          setState(() {
-            _brands = responseData['data']['content'];
-          });
-        }
+      print('Nhận response API: ${response['code']}');
+
+      if (mounted) {
+        setState(() {
+          _isLoadingBrands = false;
+
+          if (response['code'] == 200) {
+            final outerData = response['data'];
+
+            if (outerData != null && outerData['data'] != null) {
+              final innerData = outerData['data'];
+
+              if (innerData != null &&
+                  innerData['data'] != null &&
+                  innerData['data'] is List) {
+                _brands = List<dynamic>.from(
+                  innerData['data'],
+                ); // Gán trực tiếp
+                print('Tìm thấy ${_brands.length} thương hiệu');
+              } else {
+                print('Không tìm thấy mảng brands trong response');
+              }
+            } else {
+              print('Không tìm thấy dữ liệu trong response');
+            }
+          } else {
+            print('API trả về lỗi: ${response['message']}');
+            _showSnackBar('Không thể tải thương hiệu: ${response['message']}');
+          }
+        });
       }
+
+      print('Kết thúc tải thương hiệu, số lượng brands=${_brands.length}');
     } catch (e) {
-      _showSnackBar('Không thể tải thương hiệu: $e');
+      print('Lỗi ngoại lệ khi tải thương hiệu: $e');
+      if (mounted) {
+        setState(() {
+          _isLoadingBrands = false;
+        });
+        _showSnackBar('Lỗi: $e');
+      }
     }
   }
 
@@ -176,8 +296,7 @@ class _ProductsPageState extends State<ProductsPage> {
         productData,
         useToken: true,
       );
-
-      if (response['code'] == 201) {
+      if (response['code'] == 200) {
         _showSnackBar('Thêm sản phẩm thành công');
         _refreshProducts();
       } else {
@@ -279,8 +398,7 @@ class _ProductsPageState extends State<ProductsPage> {
   // Upload file cho web
   Future<String> _uploadFileForWeb(Uint8List bytes, String fileName) async {
     try {
-      const baseUrl =
-          'http://192.168.0.117:8888/api/v1'; // URL cần điều chỉnh theo THttpHelper
+      final baseUrl = url; // URL cần điều chỉnh theo THttpHelper
 
       final formData = http.MultipartRequest(
         'POST',
@@ -369,8 +487,13 @@ class _ProductsPageState extends State<ProductsPage> {
     );
 
     // Selected values
-    String? selectedCategoryId = isEditing ? product['categoryId'] : null;
-    String? selectedBrandId = isEditing ? product['brandId'] : null;
+    String? selectedCategoryId =
+        isEditing && product['category'] != null
+            ? product['category']['id']
+            : null;
+    String? selectedBrandId =
+        isEditing && product['brand'] != null ? product['brand']['id'] : null;
+
     String selectedStatus =
         isEditing ? (product['status'] ?? 'ACTIVE') : 'ACTIVE';
 
@@ -392,6 +515,17 @@ class _ProductsPageState extends State<ProductsPage> {
             'quantity': v['quantity'],
             'stockStatus': v['stockStatus'] ?? 'IN_STOCK',
             'image': v['image'],
+            'attributeVariant':
+                v['attributeVariant'] != null
+                    ? List<Map<String, dynamic>>.from(
+                      v['attributeVariant'].map(
+                        (attr) => {
+                          'name': attr['name'],
+                          'value': attr['value'],
+                        },
+                      ),
+                    )
+                    : [],
           },
         ),
       );
@@ -405,6 +539,7 @@ class _ProductsPageState extends State<ProductsPage> {
         'quantity': 0,
         'stockStatus': 'IN_STOCK',
         'image': null,
+        'attributeVariant': [], // Khởi tạo mảng rỗng
       });
     }
 
@@ -426,13 +561,17 @@ class _ProductsPageState extends State<ProductsPage> {
                   appBar: AppBar(
                     title: Text(
                       isEditing ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới',
+                      style: TextStyle(
+                        color: isEditing ? Colors.orange : Colors.blue,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(),
                         child: const Text(
                           'Hủy',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.red),
                         ),
                       ),
                       TextButton(
@@ -498,9 +637,7 @@ class _ProductsPageState extends State<ProductsPage> {
                           }
 
                           Navigator.of(context).pop();
-                          this.setState(() {
-                            _isLoading = true;
-                          });
+                          this.setState(() {});
 
                           try {
                             if (isEditing) {
@@ -509,15 +646,13 @@ class _ProductsPageState extends State<ProductsPage> {
                               await _createProduct(productData);
                             }
                           } catch (e) {
-                            this.setState(() {
-                              _isLoading = false;
-                            });
+                            this.setState(() {});
                             _showSnackBar('Đã xảy ra lỗi: $e');
                           }
                         },
                         child: Text(
                           isEditing ? 'Cập nhật' : 'Thêm',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.green),
                         ),
                       ),
                     ],
@@ -1229,6 +1364,143 @@ class _ProductsPageState extends State<ProductsPage> {
                                                 });
                                               },
                                             ),
+                                            // Thuộc tính biến thể
+                                            SizedBox(height: 16),
+                                            Text(
+                                              'Thuộc tính biến thể',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            SizedBox(height: 8),
+
+                                            // Danh sách thuộc tính hiện tại
+                                            if (variant['attributeVariant'] !=
+                                                    null &&
+                                                variant['attributeVariant']
+                                                    .isNotEmpty)
+                                              Column(
+                                                children: List.generate(
+                                                  variant['attributeVariant']
+                                                      .length,
+                                                  (attrIndex) => Padding(
+                                                    padding: EdgeInsets.only(
+                                                      bottom: 8,
+                                                    ),
+                                                    child: Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: TextField(
+                                                            controller:
+                                                                TextEditingController(
+                                                                  text:
+                                                                      variant['attributeVariant'][attrIndex]['name'] ??
+                                                                      '',
+                                                                ),
+                                                            decoration: InputDecoration(
+                                                              labelText:
+                                                                  'Tên thuộc tính',
+                                                              hintText:
+                                                                  'Ví dụ: Màu sắc',
+                                                              border:
+                                                                  OutlineInputBorder(),
+                                                              contentPadding:
+                                                                  EdgeInsets.symmetric(
+                                                                    horizontal:
+                                                                        12,
+                                                                    vertical: 8,
+                                                                  ),
+                                                            ),
+                                                            onChanged: (value) {
+                                                              variant['attributeVariant'][attrIndex]['name'] =
+                                                                  value;
+                                                            },
+                                                          ),
+                                                        ),
+                                                        SizedBox(width: 8),
+                                                        Expanded(
+                                                          child: TextField(
+                                                            controller:
+                                                                TextEditingController(
+                                                                  text:
+                                                                      variant['attributeVariant'][attrIndex]['value'] ??
+                                                                      '',
+                                                                ),
+                                                            decoration: InputDecoration(
+                                                              labelText:
+                                                                  'Giá trị',
+                                                              hintText:
+                                                                  'Ví dụ: Đen',
+                                                              border:
+                                                                  OutlineInputBorder(),
+                                                              contentPadding:
+                                                                  EdgeInsets.symmetric(
+                                                                    horizontal:
+                                                                        12,
+                                                                    vertical: 8,
+                                                                  ),
+                                                            ),
+                                                            onChanged: (value) {
+                                                              variant['attributeVariant'][attrIndex]['value'] =
+                                                                  value;
+                                                            },
+                                                          ),
+                                                        ),
+                                                        IconButton(
+                                                          icon: Icon(
+                                                            Icons.delete,
+                                                            color: Colors.red,
+                                                            size: 20,
+                                                          ),
+                                                          padding:
+                                                              EdgeInsets.all(4),
+                                                          constraints:
+                                                              BoxConstraints(),
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              variant['attributeVariant']
+                                                                  .removeAt(
+                                                                    attrIndex,
+                                                                  );
+                                                            });
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+
+                                            // Nút thêm thuộc tính mới
+                                            ElevatedButton.icon(
+                                              icon: Icon(Icons.add, size: 16),
+                                              label: Text('Thêm thuộc tính'),
+                                              style: ElevatedButton.styleFrom(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 12,
+                                                  vertical: 8,
+                                                ),
+                                                backgroundColor:
+                                                    Colors.blue[100],
+                                                foregroundColor:
+                                                    Colors.blue[800],
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  if (variant['attributeVariant'] ==
+                                                      null) {
+                                                    variant['attributeVariant'] =
+                                                        [];
+                                                  }
+                                                  variant['attributeVariant']
+                                                      .add({
+                                                        'name': '',
+                                                        'value': '',
+                                                      });
+                                                });
+                                              },
+                                            ),
 
                                             // Thêm phần để chọn hình ảnh cho variant (tùy chọn)
                                             SizedBox(height: 16),
@@ -1424,16 +1696,12 @@ class _ProductsPageState extends State<ProductsPage> {
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop();
-                setState(() {
-                  _isLoading = true;
-                });
+                setState(() {});
 
                 try {
                   await _deleteProduct(product['id']);
                 } catch (e) {
-                  setState(() {
-                    _isLoading = false;
-                  });
+                  setState(() {});
                   _showSnackBar('Không thể xóa sản phẩm: $e');
                 }
               },
@@ -1449,8 +1717,14 @@ class _ProductsPageState extends State<ProductsPage> {
   void _showProductDetails(Map<String, dynamic> product) {
     final List<dynamic> images = product['image'] ?? [];
     final String? thumbnail = product['thumbnail'];
-    final String categoryName = _getCategoryName(product['categoryId']);
-    final String brandName = _getBrandName(product['brandId']);
+    final String categoryName =
+        product['category'] != null
+            ? (product['category']['name'] ?? 'Không xác định')
+            : 'Không xác định';
+    final String brandName =
+        product['brand'] != null
+            ? (product['brand']['name'] ?? 'Không xác định')
+            : 'Không xác định';
     final bool hasVariants =
         product['variants'] != null && product['variants'].isNotEmpty;
     final double price =
@@ -1947,30 +2221,6 @@ class _ProductsPageState extends State<ProductsPage> {
     );
   }
 
-  // Lấy tên danh mục từ ID
-  String _getCategoryName(String? categoryId) {
-    if (categoryId == null) return 'Không xác định';
-
-    final category = _categories.firstWhere(
-      (c) => c['id'] == categoryId,
-      orElse: () => null,
-    );
-
-    return category != null ? category['name'] : 'Không xác định';
-  }
-
-  // Lấy tên thương hiệu từ ID
-  String _getBrandName(String? brandId) {
-    if (brandId == null) return 'Không xác định';
-
-    final brand = _brands.firstWhere(
-      (b) => b['id'] == brandId,
-      orElse: () => null,
-    );
-
-    return brand != null ? brand['name'] : 'Không xác định';
-  }
-
   // Định dạng giá tiền
   String _formatPrice(dynamic price) {
     if (price == null) return '0 VND';
@@ -2096,7 +2346,7 @@ class _ProductsPageState extends State<ProductsPage> {
             child: RefreshIndicator(
               onRefresh: _refreshProducts,
               child:
-                  _isLoading && _products.isEmpty
+                  _isLoadingProducts && _products.isEmpty
                       ? const Center(child: CircularProgressIndicator())
                       : filteredProducts.isEmpty
                       ? Center(
@@ -2139,6 +2389,8 @@ class _ProductsPageState extends State<ProductsPage> {
                         ),
                       )
                       : ListView.builder(
+                        controller: _scrollController, // Thêm dòng này
+
                         itemCount:
                             filteredProducts.length +
                             (_hasMoreData && _searchQuery.isEmpty ? 1 : 0),
@@ -2176,8 +2428,14 @@ class _ProductsPageState extends State<ProductsPage> {
     final List<dynamic> images = product['image'] ?? [];
     final String? thumbnail = product['thumbnail'];
     final String mainImage = thumbnail ?? (images.isNotEmpty ? images[0] : '');
-    final String categoryName = _getCategoryName(product['categoryId']);
-    final String brandName = _getBrandName(product['brandId']);
+    final String categoryName =
+        product['category'] != null
+            ? (product['category']['name'] ?? 'Không xác định')
+            : 'Không xác định';
+    final String brandName =
+        product['brand'] != null
+            ? (product['brand']['name'] ?? 'Không xác định')
+            : 'Không xác định';
     final bool hasVariants =
         product['variants'] != null && product['variants'].isNotEmpty;
     final double lowestPrice =

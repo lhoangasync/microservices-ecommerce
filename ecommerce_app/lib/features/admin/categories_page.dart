@@ -16,6 +16,8 @@ class CategoriesPage extends StatefulWidget {
 
 class _CategoriesPageState extends State<CategoriesPage> {
   final localStorage = GetStorage();
+  final url = THttpHelper.baseUrl;
+
   final List<dynamic> _categories = [];
   bool _isLoading = true;
   int _currentPage = 1;
@@ -25,6 +27,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
   @override
   void initState() {
     super.initState();
+
+    _isLoading = false;
     _loadCategories();
   }
 
@@ -162,11 +166,18 @@ class _CategoriesPageState extends State<CategoriesPage> {
         useToken: true,
       );
 
-      if (response['code'] == 201) {
+      if (response['code'] == 200) {
         _showSnackBar('Thêm danh mục thành công');
+        setState(() {
+          _isLoading = false;
+        });
         _refreshCategories();
       } else {
         _showSnackBar('Không thể tạo danh mục: ${response['message']}');
+        setState(() {
+          _isLoading = false;
+        });
+        ;
       }
     } catch (e) {
       _showSnackBar('Lỗi: $e');
@@ -203,9 +214,15 @@ class _CategoriesPageState extends State<CategoriesPage> {
 
       if (response['code'] == 200) {
         _showSnackBar('Cập nhật danh mục thành công');
+        setState(() {
+          _isLoading = false;
+        });
         _refreshCategories();
       } else {
         _showSnackBar('Không thể cập nhật danh mục: ${response['message']}');
+        setState(() {
+          _isLoading = false;
+        });
       }
     } catch (e) {
       _showSnackBar('Lỗi: $e');
@@ -222,9 +239,15 @@ class _CategoriesPageState extends State<CategoriesPage> {
 
       if (response['code'] == 200) {
         _showSnackBar('Xóa danh mục thành công');
+        setState(() {
+          _isLoading = false;
+        });
         _refreshCategories();
       } else {
         _showSnackBar('Không thể xóa danh mục: ${response['message']}');
+        setState(() {
+          _isLoading = false;
+        });
       }
     } catch (e) {
       _showSnackBar('Lỗi: $e');
@@ -281,7 +304,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
       // Tạo FormData để gửi lên server
       final formData = http.MultipartRequest(
         'POST',
-        Uri.parse('http://192.168.0.117:8888/api/v1/file/media/upload'),
+        Uri.parse('$url/file/media/upload'),
       );
 
       // Thêm token

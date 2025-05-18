@@ -2,6 +2,7 @@ import 'package:ecommerce_app/common/widgets/app_bar/appbar.dart';
 import 'package:ecommerce_app/common/widgets/custom_shapes/container/rounded_container.dart';
 import 'package:ecommerce_app/common/widgets/products/cart/coupon_widget.dart';
 import 'package:ecommerce_app/common/widgets/success_screen/success_screen.dart';
+import 'package:ecommerce_app/features/shop/controllers/product/cart_controller.dart';
 import 'package:ecommerce_app/features/shop/screens/cart/widgets/cart_items.dart';
 import 'package:ecommerce_app/features/shop/screens/checkout/widgets/billing_address_section.dart';
 import 'package:ecommerce_app/features/shop/screens/checkout/widgets/billing_amount.section.dart';
@@ -10,6 +11,7 @@ import 'package:ecommerce_app/navigation_menu.dart';
 import 'package:ecommerce_app/utils/constants/colors.dart';
 import 'package:ecommerce_app/utils/constants/image_strings.dart';
 import 'package:ecommerce_app/utils/constants/sizes.dart';
+import 'package:ecommerce_app/utils/formatters/formatter.dart';
 import 'package:ecommerce_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,6 +22,7 @@ class CheckoutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dark = THelperFunctions.isDarkMode(context);
+    final controller = CartController.instance;
 
     return Scaffold(
       appBar: TAppBar(
@@ -84,7 +87,9 @@ class CheckoutScreen extends StatelessWidget {
                   onPressed: () => Get.offAll(() => const NavigationMenu()),
                 ),
               ),
-          child: Text('Checkout 400.000đ'),
+          child: Text(
+            'Checkout ${TFormatter.formatVND(controller.totalCartPrice.value + 30000 + 30000)}',
+          ),
         ),
       ),
     );

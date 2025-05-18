@@ -1,5 +1,6 @@
 import 'package:ecommerce_app/data/repositories/products/product_repository.dart';
 import 'package:ecommerce_app/features/shop/models/product_model.dart';
+import 'package:ecommerce_app/utils/formatters/formatter.dart';
 import 'package:ecommerce_app/utils/popups/loader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -90,7 +91,7 @@ class ProductController extends GetxController {
     if (smallestPrice.isEqual(largestPrice)) {
       return largestPrice.toString();
     } else {
-      return '$smallestPrice - $largestPrice vn';
+      return '${TFormatter.formatVND(smallestPrice)} - ${TFormatter.formatVND(largestPrice)}';
     }
   }
 
